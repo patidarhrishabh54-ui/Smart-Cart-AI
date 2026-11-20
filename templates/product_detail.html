@@ -1,0 +1,2088 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ product.name|default('Product Details') }} — SmartCart AI
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =========================================================
+   SMARTCART AI — PRODUCT DETAIL
+   ========================================================= */
+
+.product-page {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 28px 22px 70px;
+}
+
+.product-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.product-breadcrumb a {
+    color: #475569;
+    text-decoration: none;
+}
+
+.product-breadcrumb a:hover {
+    color: #2563eb;
+}
+
+.product-breadcrumb .current {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+/* =========================================================
+   MAIN PRODUCT AREA
+   ========================================================= */
+
+.product-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr);
+    gap: 34px;
+    align-items: start;
+}
+
+.product-gallery-card,
+.product-info-card,
+.insight-card,
+.spec-card,
+.store-card,
+.related-section,
+.final-compare-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, .06);
+}
+
+/* =========================================================
+   GALLERY
+   ========================================================= */
+
+.product-gallery-card {
+    padding: 20px;
+    position: sticky;
+    top: 90px;
+}
+
+.main-image-wrap {
+    width: 100%;
+    min-height: 530px;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at 50% 30%, rgba(37, 99, 235, .08), transparent 42%),
+        linear-gradient(145deg, #f8fafc, #eef2ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.main-product-image {
+    width: 100%;
+    height: 530px;
+    object-fit: contain;
+    padding: 30px;
+    display: block;
+}
+
+.image-fallback {
+    width: 100%;
+    height: 100%;
+    min-height: 530px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    color: #64748b;
+    text-align: center;
+    padding: 30px;
+}
+
+.image-fallback-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 30px;
+}
+
+.image-fallback strong {
+    color: #334155;
+    font-size: 16px;
+}
+
+.image-fallback span {
+    font-size: 13px;
+}
+
+.gallery-badge {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    z-index: 2;
+    background: rgba(15, 23, 42, .88);
+    color: white;
+    padding: 8px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gallery-count {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    z-index: 2;
+    background: rgba(255,255,255,.92);
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.thumbnail-row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-top: 16px;
+}
+
+.product-thumbnail {
+    flex: 0 0 76px;
+    width: 76px;
+    height: 76px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: .2s ease;
+    padding: 4px;
+}
+
+.product-thumbnail:hover,
+.product-thumbnail.active {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.product-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   PRODUCT INFO
+   ========================================================= */
+
+.product-info-card {
+    padding: 30px;
+}
+
+.product-brand {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    margin-bottom: 14px;
+}
+
+.product-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -.7px;
+}
+
+.product-description {
+    margin: 18px 0 0;
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.rating-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.rating-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 11px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.rating-stars {
+    color: #f59e0b;
+    letter-spacing: 1px;
+}
+
+.review-count {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* =========================================================
+   PRICE
+   ========================================================= */
+
+.price-box {
+    margin-top: 28px;
+    padding: 22px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #eff6ff, #f8fafc);
+    border: 1px solid #dbeafe;
+}
+
+.price-label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+}
+
+.price-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.current-price {
+    font-size: 38px;
+    line-height: 1;
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.mrp-price {
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-size: 17px;
+}
+
+.discount-badge {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.saving-text {
+    margin-top: 10px;
+    color: #15803d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   STOCK
+   ========================================================= */
+
+.stock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.stock-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #16a34a;
+}
+
+.stock-dot.out {
+    background: #dc2626;
+}
+
+.stock-text {
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.product-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.product-action-btn {
+    min-height: 52px;
+    border-radius: 14px;
+    border: 1px solid #dbe2ea;
+    background: white;
+    color: #0f172a;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.product-action-btn:hover {
+    transform: translateY(-1px);
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.product-action-btn.primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.product-action-btn.primary:hover {
+    background: #1d4ed8;
+    color: white;
+}
+
+/* =========================================================
+   TRUST POINTS
+   ========================================================= */
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.trust-item {
+    padding: 13px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
+    text-align: center;
+    background: #f8fafc;
+}
+
+.trust-item strong {
+    display: block;
+    font-size: 12px;
+    color: #334155;
+}
+
+.trust-item span {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.detail-section {
+    margin-top: 34px;
+}
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 25px;
+}
+
+.section-heading p {
+    margin: 5px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* =========================================================
+   PRICE INTELLIGENCE
+   ========================================================= */
+
+.insight-card {
+    padding: 26px;
+}
+
+.insight-top {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 20px;
+}
+
+.signal-box {
+    padding: 20px;
+    border-radius: 18px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.signal-label {
+    color: #64748b;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .7px;
+}
+
+.signal-value {
+    margin-top: 7px;
+    font-size: 27px;
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.signal-value.buy {
+    color: #15803d;
+}
+
+.signal-value.wait {
+    color: #d97706;
+}
+
+.signal-value.compare {
+    color: #2563eb;
+}
+
+.signal-description {
+    margin-top: 8px;
+    color: #64748b;
+    line-height: 1.6;
+    font-size: 13px;
+}
+
+.trend-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 13px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.price-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.price-stat {
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: white;
+}
+
+.price-stat span {
+    display: block;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.price-stat strong {
+    display: block;
+    margin-top: 7px;
+    color: #0f172a;
+    font-size: 17px;
+}
+
+/* =========================================================
+   CHART
+   ========================================================= */
+
+.chart-wrap {
+    margin-top: 22px;
+    min-height: 390px;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    background: white;
+    position: relative;
+}
+
+#smartPriceChart {
+    width: 100%;
+    height: 350px;
+}
+
+.chart-empty {
+    min-height: 330px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    color: #64748b;
+}
+
+.chart-empty-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    margin-bottom: 12px;
+}
+
+.chart-empty strong {
+    color: #334155;
+}
+
+/* =========================================================
+   SPECIFICATIONS
+   ========================================================= */
+
+.spec-card {
+    padding: 26px;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.spec-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 13px;
+    background: #f8fafc;
+}
+
+.spec-name {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.spec-value {
+    color: #0f172a;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: right;
+}
+
+/* =========================================================
+   STORE PRICES
+   ========================================================= */
+
+.store-card {
+    padding: 26px;
+}
+
+.store-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.store-table th,
+.store-table td {
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+}
+
+.store-table th {
+    color: #64748b;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.store-name {
+    color: #0f172a;
+    font-weight: 800;
+}
+
+.store-price {
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.store-link {
+    display: inline-flex;
+    padding: 8px 11px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.store-link:hover {
+    background: #dbeafe;
+}
+
+/* =========================================================
+   RELATED PRODUCTS
+   ========================================================= */
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.related-card {
+    overflow: hidden;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    transition: .2s ease;
+}
+
+.related-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(15, 23, 42, .08);
+}
+
+.related-image-wrap {
+    height: 210px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.related-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.related-content {
+    padding: 16px;
+}
+
+.related-brand {
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.related-title {
+    margin-top: 6px;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.4;
+    min-height: 40px;
+}
+
+.related-price {
+    margin-top: 10px;
+    color: #0f172a;
+    font-size: 19px;
+    font-weight: 900;
+}
+
+.related-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.related-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    border-radius: 9px;
+    border: 1px solid #dbe2ea;
+    color: #334155;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    background: white;
+}
+
+.related-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.related-btn.primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
+
+.empty-box {
+    padding: 45px 20px;
+    text-align: center;
+    border: 1px dashed #cbd5e1;
+    border-radius: 18px;
+    background: #f8fafc;
+}
+
+.empty-box-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.empty-box strong {
+    display: block;
+    color: #334155;
+}
+
+.empty-box span {
+    display: block;
+    color: #64748b;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+/* =========================================================
+   FINAL CTA
+   ========================================================= */
+
+.final-compare-card {
+    margin-top: 34px;
+    padding: 34px;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(96, 165, 250, .18), transparent 30%),
+        linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    border: none;
+}
+
+.final-compare-card h2 {
+    margin: 0;
+    font-size: 27px;
+}
+
+.final-compare-card p {
+    margin: 8px 0 20px;
+    color: #cbd5e1;
+    max-width: 680px;
+    line-height: 1.6;
+}
+
+.final-compare-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 11px;
+    background: white;
+    color: #0f172a;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+    .product-main {
+        grid-template-columns: 1fr;
+    }
+
+    .product-gallery-card {
+        position: relative;
+        top: auto;
+    }
+
+    .related-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 800px) {
+    .product-page {
+        padding: 20px 14px 50px;
+    }
+
+    .product-info-card,
+    .insight-card,
+    .spec-card,
+    .store-card {
+        padding: 20px;
+    }
+
+    .main-image-wrap,
+    .main-product-image,
+    .image-fallback {
+        min-height: 390px;
+        height: 390px;
+    }
+
+    .insight-top {
+        grid-template-columns: 1fr;
+    }
+
+    .price-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .spec-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .related-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .product-title {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 560px) {
+    .product-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .trust-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .price-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .related-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .store-table {
+        min-width: 620px;
+    }
+
+    .store-card {
+        overflow-x: auto;
+    }
+
+    .current-price {
+        font-size: 32px;
+    }
+
+    .main-image-wrap,
+    .main-product-image,
+    .image-fallback {
+        min-height: 320px;
+        height: 320px;
+    }
+}
+</style>
+
+<div class="product-page">
+
+    <!-- =====================================================
+         BREADCRUMB
+         ===================================================== -->
+
+    <div class="product-breadcrumb">
+        <a href="{{ url_for('index') }}">Home</a>
+        <span>›</span>
+
+        {% if product.category %}
+            <a href="{{ url_for('search', category=product.category) }}">
+                {{ product.category }}
+            </a>
+            <span>›</span>
+        {% endif %}
+
+        <span class="current">
+            {{ product.name|default('Product') }}
+        </span>
+    </div>
+
+
+    <!-- =====================================================
+         MAIN PRODUCT
+         ===================================================== -->
+
+    <section class="product-main">
+
+        <!-- ================= GALLERY ================= -->
+
+        <div class="product-gallery-card">
+
+            <div class="main-image-wrap">
+
+                {% if product.brand %}
+                    <div class="gallery-badge">
+                        {{ product.brand }}
+                    </div>
+                {% endif %}
+
+                {% if images and images|length > 0 %}
+                    <div class="gallery-count">
+                        {{ images|length }} image{% if images|length != 1 %}s{% endif %}
+                    </div>
+                {% endif %}
+
+                {% set first_image = '' %}
+
+                {% if images and images|length > 0 %}
+                    {% set first_image = images[0] %}
+                {% elif product.image %}
+                    {% set first_image = product.image %}
+                {% endif %}
+
+                {% if first_image %}
+                    <img
+                        id="mainProductImage"
+                        class="main-product-image"
+                        src="{{ first_image }}"
+                        alt="{{ product.name|default('Product image') }}"
+                        loading="eager"
+                        onerror="handleProductImageError(this)"
+                    >
+
+                    <div id="imageFallback" class="image-fallback">
+                        <div class="image-fallback-icon">📦</div>
+                        <strong>Product image unavailable</strong>
+                        <span>No valid image URL is available for this product.</span>
+                    </div>
+                {% else %}
+                    <div class="image-fallback" style="display:flex;">
+                        <div class="image-fallback-icon">📦</div>
+                        <strong>Product image unavailable</strong>
+                        <span>No image is stored for this product.</span>
+                    </div>
+                {% endif %}
+
+            </div>
+
+
+            <!-- THUMBNAILS -->
+
+            {% if images and images|length > 1 %}
+
+                <div class="thumbnail-row">
+
+                    {% for image in images %}
+
+                        <button
+                            type="button"
+                            class="product-thumbnail {% if loop.first %}active{% endif %}"
+                            onclick="changeProductImage('{{ image|e }}', this)"
+                            aria-label="View product image {{ loop.index }}"
+                        >
+                            <img
+                                src="{{ image }}"
+                                alt="{{ product.name|default('Product') }} image {{ loop.index }}"
+                                loading="lazy"
+                                onerror="this.style.display='none';"
+                            >
+                        </button>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= PRODUCT INFO ================= -->
+
+        <div class="product-info-card">
+
+            {% if product.brand %}
+                <div class="product-brand">
+                    {{ product.brand }}
+                </div>
+            {% endif %}
+
+
+            <h1 class="product-title">
+                {{ product.name|default('Product Details') }}
+            </h1>
+
+
+            {% if product.description %}
+                <p class="product-description">
+                    {{ product.description }}
+                </p>
+            {% else %}
+                <p class="product-description">
+                    Compare price, ratings, availability and SmartCart AI price insights for this product.
+                </p>
+            {% endif %}
+
+
+            <!-- RATING -->
+
+            <div class="rating-row">
+
+                <div class="rating-pill">
+                    <span class="rating-stars">★</span>
+                    <span>{{ '%.1f'|format(product.rating|default(0)|float) }}</span>
+                </div>
+
+                {% if product.reviews %}
+                    <span class="review-count">
+                        {{ product.reviews }} reviews
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- PRICE -->
+
+            <div class="price-box">
+
+                <div class="price-label">
+                    Current price
+                </div>
+
+                <div class="price-line">
+
+                    <span class="current-price">
+                        ₹{{ "{:,.0f}".format(product.price|default(0)|float) }}
+                    </span>
+
+                    {% if product.mrp and product.mrp|float > product.price|float %}
+
+                        <span class="mrp-price">
+                            ₹{{ "{:,.0f}".format(product.mrp|float) }}
+                        </span>
+
+                        {% set discount =
+                            ((product.mrp|float - product.price|float)
+                            / product.mrp|float * 100)
+                        %}
+
+                        <span class="discount-badge">
+                            {{ "%.0f"|format(discount) }}% OFF
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if product.mrp and product.mrp|float > product.price|float %}
+
+                    <div class="saving-text">
+                        You save ₹{{ "{:,.0f}".format(
+                            product.mrp|float - product.price|float
+                        ) }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            {% set stock_value = product.stock|default(0)|int %}
+
+            <div class="stock-row">
+
+                <span class="stock-dot {% if stock_value <= 0 %}out{% endif %}"></span>
+
+                {% if stock_value > 0 %}
+                    <span class="stock-text">
+                        In Stock{% if stock_value < 10 %} · Only {{ stock_value }} left{% endif %}
+                    </span>
+                {% else %}
+                    <span class="stock-text">
+                        Currently unavailable
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="product-actions">
+
+                <a
+                    href="{{ url_for('add_to_compare', product_id=product.id) }}"
+                    class="product-action-btn primary"
+                >
+                    ⚖ Add to Compare
+                </a>
+
+                <a
+                    href="{{ url_for('compare') }}"
+                    class="product-action-btn"
+                >
+                    View Comparison
+                </a>
+
+            </div>
+
+
+            <!-- TRUST -->
+
+            <div class="trust-grid">
+
+                <div class="trust-item">
+                    <strong>Price Analysis</strong>
+                    <span>AI-powered insights</span>
+                </div>
+
+                <div class="trust-item">
+                    <strong>Price History</strong>
+                    <span>Historical tracking</span>
+                </div>
+
+                <div class="trust-item">
+                    <strong>Smart Compare</strong>
+                    <span>Compare alternatives</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PRICE INTELLIGENCE
+         ===================================================== -->
+
+    <section class="detail-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Smart Price Intelligence</h2>
+                <p>
+                    Historical prices and future price prediction where data is available.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="insight-card">
+
+            <div class="insight-top">
+
+                <!-- SIGNAL -->
+
+                <div class="signal-box">
+
+                    <div class="signal-label">
+                        SmartCart AI signal
+                    </div>
+
+                    {% set signal =
+                        price_data.signal
+                        if price_data is defined and price_data
+                        else ''
+                    %}
+
+                    {% set signal_upper = signal|string|upper %}
+
+                    <div class="signal-value
+                        {% if 'BUY' in signal_upper %}
+                            buy
+                        {% elif 'WAIT' in signal_upper %}
+                            wait
+                        {% elif 'COMPARE' in signal_upper %}
+                            compare
+                        {% endif %}
+                    ">
+
+                        {% if signal %}
+                            {{ signal }}
+                        {% elif prediction_available %}
+                            AI PRICE INSIGHT
+                        {% else %}
+                            PRICE TRACKING
+                        {% endif %}
+
+                    </div>
+
+
+                    {% if price_data and price_data.suggestion is defined and price_data.suggestion %}
+
+                        <div class="signal-description">
+                            {{ price_data.suggestion }}
+                        </div>
+
+                    {% elif price_data and price_data.message is defined and price_data.message %}
+
+                        <div class="signal-description">
+                            {{ price_data.message }}
+                        </div>
+
+                    {% else %}
+
+                        <div class="signal-description">
+                            SmartCart AI will use available historical and forecast data to provide a price insight.
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if price_data and price_data.trend is defined and price_data.trend %}
+
+                        <div class="trend-badge">
+                            Trend: {{ price_data.trend }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- STATS -->
+
+                <div class="price-stats">
+
+                    <div class="price-stat">
+                        <span>Current</span>
+                        <strong>
+                            ₹{{ "{:,.0f}".format(product.price|default(0)|float) }}
+                        </strong>
+                    </div>
+
+
+                    <div class="price-stat">
+
+                        <span>Historical points</span>
+
+                        <strong>
+                            {% if history %}
+                                {{ history|length }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-stat">
+
+                        <span>Forecast points</span>
+
+                        <strong>
+                            {% if forecast %}
+                                {{ forecast|length }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHART -->
+
+            <div class="chart-wrap">
+
+                {% if history or forecast %}
+
+                    <canvas
+                        id="smartPriceChart"
+                        data-history='{{ history|default([])|tojson|safe }}'
+                        data-forecast='{{ forecast|default([])|tojson|safe }}'
+                    ></canvas>
+
+                {% else %}
+
+                    <div class="chart-empty">
+
+                        <div class="chart-empty-icon">
+                            📈
+                        </div>
+
+                        <strong>
+                            Price history is not available yet
+                        </strong>
+
+                        <span>
+                            This product does not currently have enough historical data for a chart.
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SPECIFICATIONS
+         ===================================================== -->
+
+    <section class="detail-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Product Specifications</h2>
+                <p>
+                    Technical and catalogue information available in SmartCart AI.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="spec-card">
+
+            {% set specs = product.specs|default([]) %}
+
+            {% if specs %}
+
+                <div class="spec-grid">
+
+                    {% for spec in specs %}
+
+                        {% if spec is mapping %}
+
+                            {% set spec_name =
+                                spec.name
+                                if spec.name is defined
+                                else spec.spec_name
+                            %}
+
+                            {% set spec_value =
+                                spec.value
+                                if spec.value is defined
+                                else spec.spec_value
+                            %}
+
+                        {% else %}
+
+                            {% set spec_name = '' %}
+                            {% set spec_value = spec %}
+
+                        {% endif %}
+
+                        {% if spec_name and spec_value %}
+
+                            <div class="spec-item">
+
+                                <span class="spec-name">
+                                    {{ spec_name }}
+                                </span>
+
+                                <span class="spec-value">
+                                    {{ spec_value }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-box">
+
+                    <div class="empty-box-icon">
+                        ⚙
+                    </div>
+
+                    <strong>
+                        Specifications unavailable
+                    </strong>
+
+                    <span>
+                        Detailed technical specifications have not been stored for this product yet.
+                    </span>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STORE PRICE COMPARISON
+         ===================================================== -->
+
+    <section class="detail-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Store Price Comparison</h2>
+                <p>
+                    Store-level prices available in the database.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="store-card">
+
+            {% if stores %}
+
+                <table class="store-table">
+
+                    <thead>
+                        <tr>
+                            <th>Store</th>
+                            <th>Price</th>
+                            <th>Availability</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for store in stores %}
+
+                            <tr>
+
+                                <td class="store-name">
+                                    {{ store.store_name
+                                        if store.store_name is defined
+                                        else store.name|default('Store')
+                                    }}
+                                </td>
+
+                                <td class="store-price">
+
+                                    ₹{{ "{:,.0f}".format(
+                                        (
+                                            store.price
+                                            if store.price is defined
+                                            else 0
+                                        )|float
+                                    ) }}
+
+                                </td>
+
+                                <td>
+
+                                    {% if store.stock is defined %}
+
+                                        {% if store.stock %}
+                                            In Stock
+                                        {% else %}
+                                            Out of Stock
+                                        {% endif %}
+
+                                    {% elif store.availability is defined %}
+
+                                        {{ store.availability }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if store.url is defined and store.url %}
+
+                                        <a
+                                            href="{{ store.url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="store-link"
+                                        >
+                                            Visit Store →
+                                        </a>
+
+                                    {% elif store.product_url is defined and store.product_url %}
+
+                                        <a
+                                            href="{{ store.product_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="store-link"
+                                        >
+                                            Visit Store →
+                                        </a>
+
+                                    {% else %}
+
+                                        <span style="color:#94a3b8;">
+                                            No link
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="empty-box">
+
+                    <div class="empty-box-icon">
+                        🏪
+                    </div>
+
+                    <strong>
+                        Store comparison unavailable
+                    </strong>
+
+                    <span>
+                        No store-level pricing records are available for this product yet.
+                    </span>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         RELATED PRODUCTS
+         ===================================================== -->
+
+    <section class="detail-section">
+
+        <div class="section-heading">
+            <div>
+                <h2>Similar Products</h2>
+                <p>
+                    Explore similar products and compare them before buying.
+                </p>
+            </div>
+
+            {% if product.category %}
+
+                <a
+                    href="{{ url_for('search', category=product.category) }}"
+                    class="store-link"
+                >
+                    View More →
+                </a>
+
+            {% endif %}
+        </div>
+
+
+        {% if related_products %}
+
+            <div class="related-grid">
+
+                {% for related in related_products %}
+
+                    <article class="related-card">
+
+                        <div class="related-image-wrap">
+
+                            {% if related.image %}
+
+                                <img
+                                    src="{{ related.image }}"
+                                    class="related-image"
+                                    alt="{{ related.name|default('Product') }}"
+                                    loading="lazy"
+                                    onerror="this.onerror=null;this.src='/static/images/products/product-placeholder.svg';"
+                                >
+
+                            {% else %}
+
+                                <div style="
+                                    width:60px;
+                                    height:60px;
+                                    border-radius:16px;
+                                    background:#e2e8f0;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    color:#64748b;
+                                    font-size:25px;
+                                ">
+                                    📦
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="related-content">
+
+                            {% if related.brand %}
+                                <div class="related-brand">
+                                    {{ related.brand }}
+                                </div>
+                            {% endif %}
+
+
+                            <div class="related-title">
+                                {{ related.name|default('Product') }}
+                            </div>
+
+
+                            <div class="related-price">
+                                ₹{{ "{:,.0f}".format(
+                                    related.price|default(0)|float
+                                ) }}
+                            </div>
+
+
+                            <div class="related-actions">
+
+                                <a
+                                    href="{{ url_for('product_detail', product_id=related.id) }}"
+                                    class="related-btn"
+                                >
+                                    Details
+                                </a>
+
+                                <a
+                                    href="{{ url_for('add_to_compare', product_id=related.id) }}"
+                                    class="related-btn primary"
+                                >
+                                    Compare
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-box">
+
+                <div class="empty-box-icon">
+                    🔎
+                </div>
+
+                <strong>
+                    No similar products found
+                </strong>
+
+                <span>
+                    Try browsing the product category for more options.
+                </span>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL COMPARE CTA
+         ===================================================== -->
+
+    <section class="final-compare-card">
+
+        <h2>
+            Not sure whether this is the right product?
+        </h2>
+
+        <p>
+            Compare this product with similar models by price, brand,
+            rating, availability and available specifications.
+        </p>
+
+        <a
+            href="{{ url_for('add_to_compare', product_id=product.id) }}"
+            class="final-compare-btn"
+        >
+            ⚖ Add This Product to Compare
+        </a>
+
+    </section>
+
+</div>
+
+
+<!-- =========================================================
+     PRODUCT DETAIL JAVASCRIPT
+     ========================================================= -->
+
+<script>
+(function () {
+
+    "use strict";
+
+
+    /* =======================================================
+       IMAGE ERROR HANDLING
+       ======================================================= */
+
+    window.handleProductImageError = function (image) {
+
+        if (!image) {
+            return;
+        }
+
+        image.style.display = "none";
+
+        const fallback = document.getElementById("imageFallback");
+
+        if (fallback) {
+            fallback.style.display = "flex";
+        }
+    };
+
+
+    /* =======================================================
+       CHANGE MAIN PRODUCT IMAGE
+       ======================================================= */
+
+    window.changeProductImage = function (imageUrl, button) {
+
+        const mainImage =
+            document.getElementById("mainProductImage");
+
+        const fallback =
+            document.getElementById("imageFallback");
+
+        if (!mainImage || !imageUrl) {
+            return;
+        }
+
+        mainImage.src = imageUrl;
+        mainImage.style.display = "block";
+
+        if (fallback) {
+            fallback.style.display = "none";
+        }
+
+        document
+            .querySelectorAll(".product-thumbnail")
+            .forEach(function (thumbnail) {
+                thumbnail.classList.remove("active");
+            });
+
+        if (button) {
+            button.classList.add("active");
+        }
+    };
+
+
+    /* =======================================================
+       PRICE CHART
+       ======================================================= */
+
+    function initPriceChart() {
+
+        const canvas =
+            document.getElementById("smartPriceChart");
+
+        if (!canvas) {
+            return;
+        }
+
+        if (typeof Chart === "undefined") {
+            return;
+        }
+
+        let history = [];
+        let forecast = [];
+
+        try {
+            history = JSON.parse(
+                canvas.getAttribute("data-history") || "[]"
+            );
+        } catch (error) {
+            history = [];
+        }
+
+        try {
+            forecast = JSON.parse(
+                canvas.getAttribute("data-forecast") || "[]"
+            );
+        } catch (error) {
+            forecast = [];
+        }
+
+
+        function getLabel(item) {
+
+            if (!item || typeof item !== "object") {
+                return "";
+            }
+
+            return (
+                item.month ||
+                item.date ||
+                item.label ||
+                item.period ||
+                ""
+            );
+        }
+
+
+        function getPrice(item) {
+
+            if (!item || typeof item !== "object") {
+                return null;
+            }
+
+            const possible =
+                item.price ??
+                item.predicted_price ??
+                item.prediction ??
+                item.value ??
+                null;
+
+            const number =
+                Number(possible);
+
+            return Number.isFinite(number)
+                ? number
+                : null;
+        }
+
+
+        const labels = [];
+        const actualData = [];
+        const forecastData = [];
+
+
+        history.forEach(function (item) {
+
+            labels.push(getLabel(item));
+            actualData.push(getPrice(item));
+            forecastData.push(null);
+
+        });
+
+
+        forecast.forEach(function (item) {
+
+            const label = getLabel(item);
+            const price = getPrice(item);
+
+            labels.push(label);
+            actualData.push(null);
+            forecastData.push(price);
+
+        });
+
+
+        if (!labels.length) {
+            return;
+        }
+
+
+        new Chart(canvas, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "Historical Price",
+                        data: actualData,
+                        borderWidth: 3,
+                        tension: .35,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        spanGaps: true
+                    },
+
+                    {
+                        label: "Predicted Price",
+                        data: forecastData,
+                        borderWidth: 3,
+                        borderDash: [7, 6],
+                        tension: .35,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        spanGaps: true
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+
+                plugins: {
+
+                    legend: {
+                        position: "top"
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function (context) {
+
+                                const value =
+                                    context.parsed.y;
+
+                                if (
+                                    value === null ||
+                                    value === undefined
+                                ) {
+                                    return "";
+                                }
+
+                                return (
+                                    context.dataset.label +
+                                    ": ₹" +
+                                    Number(value).toLocaleString("en-IN")
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: false,
+
+                        ticks: {
+
+                            callback: function (value) {
+
+                                return "₹" +
+                                    Number(value).toLocaleString("en-IN");
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    /* =======================================================
+       DOM READY
+       ======================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            initPriceChart();
+
+        }
+    );
+
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,1345 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Sign In | SmartCart AI
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="auth-shell">
+
+        <!-- LEFT VISUAL PANEL -->
+        <div class="auth-visual">
+
+            <div class="auth-visual-overlay"></div>
+
+            <div class="auth-brand">
+                <div class="auth-brand-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+
+                <div>
+                    <strong>SmartCart</strong>
+                    <span>AI</span>
+                </div>
+            </div>
+
+            <div class="auth-visual-content">
+
+                <div class="auth-eyebrow">
+                    <i class="fa-solid fa-sparkles"></i>
+                    Smarter Shopping Starts Here
+                </div>
+
+                <h1>
+                    Shop smarter.
+                    <br>
+                    <span>Save more.</span>
+                </h1>
+
+                <p>
+                    Compare products, understand price trends,
+                    explore historical prices and make better
+                    buying decisions with SmartCart AI.
+                </p>
+
+                <div class="auth-benefits">
+
+                    <div class="auth-benefit">
+                        <div class="auth-benefit-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+
+                        <div>
+                            <strong>Price Intelligence</strong>
+                            <span>Track historical and predicted prices.</span>
+                        </div>
+                    </div>
+
+                    <div class="auth-benefit">
+                        <div class="auth-benefit-icon">
+                            <i class="fa-solid fa-code-compare"></i>
+                        </div>
+
+                        <div>
+                            <strong>Smart Comparison</strong>
+                            <span>Compare up to 4 products together.</span>
+                        </div>
+                    </div>
+
+                    <div class="auth-benefit">
+                        <div class="auth-benefit-icon">
+                            <i class="fa-solid fa-filter"></i>
+                        </div>
+
+                        <div>
+                            <strong>Powerful Discovery</strong>
+                            <span>Find products using smart filters.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="auth-visual-footer">
+                <span>
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Secure demo authentication
+                </span>
+
+                <span>
+                    <i class="fa-solid fa-bolt"></i>
+                    AI-powered shopping
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT AUTH PANEL -->
+        <div class="auth-panel">
+
+            <div class="auth-panel-inner">
+
+                <!-- HEADER -->
+                <div class="auth-heading">
+
+                    <div class="auth-mobile-logo">
+                        <div class="auth-mobile-logo-icon">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+
+                        <div>
+                            <strong>SmartCart</strong>
+                            <span>AI</span>
+                        </div>
+                    </div>
+
+                    {% if otp_sent %}
+
+                        <div class="auth-step">
+                            <span class="auth-step-number active">1</span>
+                            <span class="auth-step-line"></span>
+                            <span class="auth-step-number active">2</span>
+                        </div>
+
+                        <h2>Enter your OTP</h2>
+
+                        <p>
+                            We generated a 6-digit demo OTP for
+                            {% if phone %}
+                                <strong>{{ phone }}</strong>
+                            {% elif email %}
+                                <strong>{{ email }}</strong>
+                            {% else %}
+                                your account
+                            {% endif %}
+                        </p>
+
+                    {% else %}
+
+                        <div class="auth-step">
+                            <span class="auth-step-number active">1</span>
+                            <span class="auth-step-line"></span>
+                            <span class="auth-step-number">2</span>
+                        </div>
+
+                        <h2>Welcome back</h2>
+
+                        <p>
+                            Sign in to continue your SmartCart AI
+                            shopping experience.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- FLASH MESSAGES -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% if messages %}
+
+                        <div class="auth-flashes">
+
+                            {% for category, message in messages %}
+
+                                <div class="auth-flash auth-flash-{{ category }}">
+
+                                    <span class="auth-flash-icon">
+
+                                        {% if category == "success" %}
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                        {% elif category == "danger" %}
+                                            <i class="fa-solid fa-circle-xmark"></i>
+
+                                        {% elif category == "warning" %}
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                                        {% else %}
+                                            <i class="fa-solid fa-circle-info"></i>
+                                        {% endif %}
+
+                                    </span>
+
+                                    <span>{{ message }}</span>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                {% if not otp_sent %}
+
+                    <!-- STEP 1 -->
+                    <form
+                        action="{{ url_for('auth') }}"
+                        method="POST"
+                        class="auth-form"
+                        id="authRequestForm"
+                    >
+
+                        <div class="auth-input-group">
+
+                            <label for="phone">
+                                Mobile Number
+                            </label>
+
+                            <div class="auth-input-wrap">
+
+                                <span class="auth-input-icon">
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                </span>
+
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    placeholder="Enter mobile number"
+                                    autocomplete="tel"
+                                >
+
+                            </div>
+
+                            <small>
+                                Example: +91 98765 43210
+                            </small>
+
+                        </div>
+
+
+                        <div class="auth-divider">
+
+                            <span>OR</span>
+
+                        </div>
+
+
+                        <div class="auth-input-group">
+
+                            <label for="email">
+                                Email Address
+                            </label>
+
+                            <div class="auth-input-wrap">
+
+                                <span class="auth-input-icon">
+                                    <i class="fa-regular fa-envelope"></i>
+                                </span>
+
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Enter email address"
+                                    autocomplete="email"
+                                >
+
+                            </div>
+
+                            <small>
+                                Use either mobile number or email.
+                            </small>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-submit-btn"
+                        >
+
+                            <span>
+                                Continue
+                            </span>
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                        <div class="auth-demo-note">
+
+                            <i class="fa-solid fa-terminal"></i>
+
+                            <div>
+                                <strong>Demo authentication</strong>
+
+                                <span>
+                                    OTP will be printed in your Flask
+                                    terminal for testing.
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </form>
+
+
+                {% else %}
+
+                    <!-- STEP 2 -->
+                    <form
+                        action="{{ url_for('verify_otp') }}"
+                        method="POST"
+                        class="auth-form"
+                        id="otpVerifyForm"
+                    >
+
+                        <div class="otp-destination">
+
+                            <div class="otp-destination-icon">
+
+                                {% if phone %}
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-envelope"></i>
+                                {% endif %}
+
+                            </div>
+
+                            <div>
+
+                                <span>OTP sent for</span>
+
+                                <strong>
+                                    {% if phone %}
+                                        {{ phone }}
+                                    {% elif email %}
+                                        {{ email }}
+                                    {% else %}
+                                        SmartCart User
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="auth-input-group">
+
+                            <label for="otp">
+                                Enter 6-digit OTP
+                            </label>
+
+                            <div class="otp-input-wrap">
+
+                                <span class="auth-input-icon">
+                                    <i class="fa-solid fa-key"></i>
+                                </span>
+
+                                <input
+                                    type="text"
+                                    id="otp"
+                                    name="otp"
+                                    class="otp-input"
+                                    placeholder="••••••"
+                                    inputmode="numeric"
+                                    maxlength="6"
+                                    autocomplete="one-time-code"
+                                    autofocus
+                                    required
+                                >
+
+                            </div>
+
+                            <small>
+                                Check the Flask terminal for the demo OTP.
+                            </small>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="auth-submit-btn"
+                        >
+
+                            <span>
+                                Verify & Sign In
+                            </span>
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                        <div class="auth-back-action">
+
+                            <a href="{{ url_for('auth') }}">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                Use another number or email
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                {% endif %}
+
+
+                <!-- SECURITY NOTE -->
+                <div class="auth-security">
+
+                    <div class="auth-security-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>Your privacy matters</strong>
+
+                        <span>
+                            SmartCart AI uses this demo authentication
+                            flow only for your local project testing.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BACK HOME -->
+                <a
+                    href="{{ url_for('index') }}"
+                    class="auth-home-link"
+                >
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Back to SmartCart
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<style>
+
+.auth-page {
+    min-height: calc(100vh - 76px);
+    padding: 32px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(79, 70, 229, 0.10),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 85% 85%,
+            rgba(14, 165, 233, 0.10),
+            transparent 30%
+        ),
+        #f7f8fc;
+}
+
+.auth-shell {
+    width: min(1120px, 100%);
+    min-height: 700px;
+    display: grid;
+    grid-template-columns: 1fr 0.86fr;
+    overflow: hidden;
+    border-radius: 30px;
+    background: #ffffff;
+    box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.14),
+        0 8px 25px rgba(15, 23, 42, 0.06);
+}
+
+
+/* LEFT */
+
+.auth-visual {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 42px;
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(129, 140, 248, 0.38),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 70%,
+            rgba(56, 189, 248, 0.22),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #111827 0%,
+            #1e1b4b 48%,
+            #312e81 100%
+        );
+}
+
+.auth-visual::before {
+    content: "";
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 50%;
+    top: -140px;
+    right: -100px;
+}
+
+.auth-visual::after {
+    content: "";
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+    bottom: -300px;
+    left: -200px;
+}
+
+.auth-visual-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.03),
+            transparent 45%
+        );
+    pointer-events: none;
+}
+
+.auth-brand {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auth-brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.16);
+    backdrop-filter: blur(12px);
+    font-size: 18px;
+}
+
+.auth-brand strong {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.auth-brand span {
+    margin-left: 4px;
+    color: #a5b4fc;
+    font-weight: 800;
+}
+
+.auth-visual-content {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+}
+
+.auth-eyebrow {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px;
+    margin-bottom: 22px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.09);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #c7d2fe;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.auth-visual-content h1 {
+    margin: 0;
+    font-size: clamp(38px, 4vw, 58px);
+    line-height: 1.03;
+    letter-spacing: -2.8px;
+    font-weight: 900;
+}
+
+.auth-visual-content h1 span {
+    color: #a5b4fc;
+}
+
+.auth-visual-content > p {
+    margin: 24px 0 30px;
+    max-width: 470px;
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.auth-benefits {
+    display: grid;
+    gap: 14px;
+}
+
+.auth-benefit {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.auth-benefit-icon {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: #c7d2fe;
+}
+
+.auth-benefit strong,
+.auth-benefit span {
+    display: block;
+}
+
+.auth-benefit strong {
+    margin-bottom: 3px;
+    font-size: 13px;
+}
+
+.auth-benefit span {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.auth-visual-footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.auth-visual-footer span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+
+/* RIGHT */
+
+.auth-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 45px 48px;
+    background: #ffffff;
+}
+
+.auth-panel-inner {
+    width: min(400px, 100%);
+}
+
+.auth-mobile-logo {
+    display: none;
+}
+
+.auth-heading {
+    margin-bottom: 28px;
+}
+
+.auth-step {
+    display: flex;
+    align-items: center;
+    width: 110px;
+    margin-bottom: 24px;
+}
+
+.auth-step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 1px solid #dbe1ea;
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.auth-step-number.active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+}
+
+.auth-step-line {
+    flex: 1;
+    height: 1px;
+    background: #dbe1ea;
+}
+
+.auth-heading h2 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 31px;
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    font-weight: 850;
+}
+
+.auth-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.auth-heading p strong {
+    color: #334155;
+}
+
+
+/* FLASH */
+
+.auth-flashes {
+    display: grid;
+    gap: 9px;
+    margin-bottom: 18px;
+}
+
+.auth-flash {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.auth-flash-icon {
+    flex: 0 0 auto;
+}
+
+.auth-flash-success {
+    color: #166534;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.auth-flash-danger {
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+.auth-flash-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.auth-flash-info {
+    color: #1e40af;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+
+/* FORM */
+
+.auth-form {
+    display: grid;
+    gap: 18px;
+}
+
+.auth-input-group {
+    display: grid;
+    gap: 8px;
+}
+
+.auth-input-group label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.auth-input-group small {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.auth-input-wrap,
+.otp-input-wrap {
+    position: relative;
+}
+
+.auth-input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.auth-input-wrap input,
+.otp-input-wrap input {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px 0 45px;
+    border: 1px solid #dbe1ea;
+    border-radius: 13px;
+    outline: none;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 13px;
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+    box-sizing: border-box;
+}
+
+.auth-input-wrap input::placeholder,
+.otp-input-wrap input::placeholder {
+    color: #a8b2c1;
+}
+
+.auth-input-wrap input:focus,
+.otp-input-wrap input:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.10);
+}
+
+.otp-input {
+    text-align: center;
+    letter-spacing: 9px;
+    font-size: 20px !important;
+    font-weight: 800;
+    padding-right: 15px !important;
+}
+
+
+/* DIVIDER */
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #a1aabd;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e8ecf2;
+}
+
+
+/* BUTTON */
+
+.auth-submit-btn {
+    height: 51px;
+    border: 0;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #6366f1
+        );
+    box-shadow:
+        0 10px 25px rgba(79,70,229,0.22);
+    font-size: 13px;
+    font-weight: 800;
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 14px 30px rgba(79,70,229,0.28);
+}
+
+.auth-submit-btn i {
+    font-size: 11px;
+}
+
+
+/* DEMO NOTE */
+
+.auth-demo-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px;
+    border-radius: 13px;
+    background: #f8fafc;
+    border: 1px solid #edf0f5;
+}
+
+.auth-demo-note > i {
+    margin-top: 2px;
+    color: #6366f1;
+}
+
+.auth-demo-note strong,
+.auth-demo-note span {
+    display: block;
+}
+
+.auth-demo-note strong {
+    margin-bottom: 3px;
+    color: #334155;
+    font-size: 11px;
+}
+
+.auth-demo-note span {
+    color: #94a3b8;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* OTP DESTINATION */
+
+.otp-destination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border-radius: 13px;
+    background: #f8fafc;
+    border: 1px solid #e8ecf2;
+}
+
+.otp-destination-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.otp-destination span,
+.otp-destination strong {
+    display: block;
+}
+
+.otp-destination span {
+    margin-bottom: 3px;
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.otp-destination strong {
+    color: #334155;
+    font-size: 12px;
+}
+
+
+/* BACK ACTION */
+
+.auth-back-action {
+    text-align: center;
+}
+
+.auth-back-action a {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.auth-back-action a:hover {
+    color: #4f46e5;
+}
+
+.auth-back-action i {
+    margin-right: 5px;
+}
+
+
+/* SECURITY */
+
+.auth-security {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f5;
+}
+
+.auth-security-icon {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: #059669;
+    background: #ecfdf5;
+}
+
+.auth-security strong,
+.auth-security span {
+    display: block;
+}
+
+.auth-security strong {
+    margin-bottom: 3px;
+    color: #475569;
+    font-size: 10px;
+}
+
+.auth-security span {
+    color: #94a3b8;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.auth-home-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 22px;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.auth-home-link:hover {
+    color: #4f46e5;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .auth-shell {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+
+    .auth-visual {
+        display: none;
+    }
+
+    .auth-panel {
+        min-height: 680px;
+        padding: 38px 25px;
+    }
+
+    .auth-mobile-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+    }
+
+    .auth-mobile-logo-icon {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .auth-mobile-logo strong {
+        color: #111827;
+        font-size: 18px;
+        font-weight: 850;
+    }
+
+    .auth-mobile-logo span {
+        margin-left: 3px;
+        color: #4f46e5;
+        font-weight: 850;
+    }
+
+}
+
+@media (max-width: 520px) {
+
+    .auth-page {
+        min-height: calc(100vh - 65px);
+        padding: 12px;
+    }
+
+    .auth-shell {
+        border-radius: 20px;
+    }
+
+    .auth-panel {
+        padding: 28px 20px;
+    }
+
+    .auth-heading h2 {
+        font-size: 27px;
+    }
+
+    .auth-step {
+        margin-bottom: 19px;
+    }
+
+}
+
+</style>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const phoneInput = document.getElementById("phone");
+    const emailInput = document.getElementById("email");
+    const authForm = document.getElementById("authRequestForm");
+    const otpInput = document.getElementById("otp");
+    const otpForm = document.getElementById("otpVerifyForm");
+
+
+    /* --------------------------------
+       PHONE / EMAIL MUTUAL EXCLUSIVE
+    -------------------------------- */
+
+    if (phoneInput && emailInput) {
+
+        phoneInput.addEventListener("input", function () {
+
+            if (this.value.trim() !== "") {
+                emailInput.removeAttribute("required");
+            }
+
+        });
+
+        emailInput.addEventListener("input", function () {
+
+            if (this.value.trim() !== "") {
+                phoneInput.removeAttribute("required");
+            }
+
+        });
+
+    }
+
+
+    /* --------------------------------
+       AUTH FORM VALIDATION
+    -------------------------------- */
+
+    if (authForm) {
+
+        authForm.addEventListener("submit", function (event) {
+
+            const phone = phoneInput
+                ? phoneInput.value.trim()
+                : "";
+
+            const email = emailInput
+                ? emailInput.value.trim()
+                : "";
+
+            if (!phone && !email) {
+
+                event.preventDefault();
+
+                alert(
+                    "Please enter your mobile number or email address."
+                );
+
+                return;
+
+            }
+
+            const submitButton =
+                authForm.querySelector(
+                    ".auth-submit-btn"
+                );
+
+            if (submitButton) {
+
+                submitButton.disabled = true;
+
+                submitButton.innerHTML = `
+                    <span>Generating OTP...</span>
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                `;
+
+            }
+
+        });
+
+    }
+
+
+    /* --------------------------------
+       OTP ONLY NUMBERS
+    -------------------------------- */
+
+    if (otpInput) {
+
+        otpInput.addEventListener("input", function () {
+
+            this.value = this.value
+                .replace(/\D/g, "")
+                .slice(0, 6);
+
+        });
+
+        otpInput.addEventListener("keydown", function (event) {
+
+            const allowedKeys = [
+                "Backspace",
+                "Delete",
+                "ArrowLeft",
+                "ArrowRight",
+                "Tab"
+            ];
+
+            if (
+                allowedKeys.includes(event.key)
+                ||
+                /^[0-9]$/.test(event.key)
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+        });
+
+    }
+
+
+    /* --------------------------------
+       OTP SUBMIT
+    -------------------------------- */
+
+    if (otpForm) {
+
+        otpForm.addEventListener("submit", function (event) {
+
+            if (
+                !otpInput
+                ||
+                otpInput.value.trim().length !== 6
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "Please enter the complete 6-digit OTP."
+                );
+
+                if (otpInput) {
+                    otpInput.focus();
+                }
+
+                return;
+
+            }
+
+            const submitButton =
+                otpForm.querySelector(
+                    ".auth-submit-btn"
+                );
+
+            if (submitButton) {
+
+                submitButton.disabled = true;
+
+                submitButton.innerHTML = `
+                    <span>Verifying...</span>
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                `;
+
+            }
+
+        });
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

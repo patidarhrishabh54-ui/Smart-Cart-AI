@@ -1,0 +1,1355 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if query %}
+        Search: {{ query }} — SmartCart AI
+    {% elif category %}
+        {{ category }} — SmartCart AI
+    {% else %}
+        Product Search — SmartCart AI
+    {% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<!-- =========================================================
+     SEARCH HERO
+========================================================= -->
+
+<section class="search-page-head">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a href="{{ url_for('index') }}">
+                Home
+            </a>
+
+            <span>/</span>
+
+            <span>Search</span>
+
+            {% if category %}
+                <span>/</span>
+                <strong>{{ category }}</strong>
+            {% endif %}
+
+        </div>
+
+
+        <div class="search-heading-row">
+
+            <div>
+
+                <span class="section-kicker">
+                    SMART PRODUCT SEARCH
+                </span>
+
+                <h1>
+
+                    {% if query %}
+                        Results for
+                        <span>“{{ query }}”</span>
+
+                    {% elif category %}
+                        Explore
+                        <span>{{ category }}</span>
+
+                    {% else %}
+                        Find your
+                        <span>perfect product</span>
+                    {% endif %}
+
+                </h1>
+
+                <p>
+                    {% if total_results|default(0) %}
+                        {{ total_results }} products found.
+                    {% else %}
+                        Search products, brands and models using
+                        SmartCart AI.
+                    {% endif %}
+                </p>
+
+            </div>
+
+
+            <div class="search-page-stat">
+
+                <strong>
+                    {{ total_results|default(0) }}
+                </strong>
+
+                <span>
+                    matching products
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- LARGE SEARCH -->
+
+        <form class="search-page-search"
+              action="{{ url_for('search') }}"
+              method="GET">
+
+            <span>⌕</span>
+
+            <input
+                type="search"
+                name="q"
+                value="{{ query|default('') }}"
+                placeholder="Search by product, brand, model..."
+            >
+
+            {% if category %}
+                <input
+                    type="hidden"
+                    name="category"
+                    value="{{ category }}"
+                >
+            {% endif %}
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SEARCH CONTENT
+========================================================= -->
+
+<section class="search-content-section">
+
+    <div class="container search-layout">
+
+
+        <!-- =================================================
+             MOBILE FILTER BUTTON
+        ================================================== -->
+
+        <button
+            type="button"
+            class="mobile-filter-button"
+            data-filter-toggle>
+
+            ☷
+            Filters
+
+            {% if dynamic_filters|default([]) %}
+                <span>{{ dynamic_filters|length }}</span>
+            {% endif %}
+
+        </button>
+
+
+        <!-- =================================================
+             FILTER SIDEBAR
+        ================================================== -->
+
+        <aside class="filter-sidebar"
+               data-filter-sidebar>
+
+            <div class="filter-sidebar-head">
+
+                <div>
+
+                    <span class="section-kicker">
+                        REFINE
+                    </span>
+
+                    <h3>
+                        Filters
+                    </h3>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="filter-close"
+                    data-filter-close>
+                    ×
+                </button>
+
+            </div>
+
+
+            <form
+                action="{{ url_for('search') }}"
+                method="GET"
+                class="filter-form"
+            >
+
+                <!-- Preserve search -->
+
+                {% if query %}
+                    <input
+                        type="hidden"
+                        name="q"
+                        value="{{ query }}"
+                    >
+                {% endif %}
+
+
+                <!-- Preserve category -->
+
+                {% if category %}
+                    <input
+                        type="hidden"
+                        name="category"
+                        value="{{ category }}"
+                    >
+                {% endif %}
+
+
+                {% if subcategory %}
+                    <input
+                        type="hidden"
+                        name="subcategory"
+                        value="{{ subcategory }}"
+                    >
+                {% endif %}
+
+
+                <!-- ================================
+                     CATEGORY
+                ================================= -->
+
+                <div class="filter-group">
+
+                    <div class="filter-group-title">
+                        <span>Category</span>
+                    </div>
+
+
+                    <div class="filter-options">
+
+                        {% for item in categories|default([]) %}
+
+                            {% set item_name =
+                                item.name
+                                if item is mapping
+                                else item
+                            %}
+
+                            <label class="filter-radio">
+
+                                <input
+                                    type="radio"
+                                    name="category"
+                                    value="{{ item_name }}"
+                                    {% if category == item_name %}
+                                        checked
+                                    {% endif %}
+                                    onchange="this.form.submit()"
+                                >
+
+                                <span class="custom-radio"></span>
+
+                                <span>
+                                    {{ item_name }}
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     BRAND
+                ================================= -->
+
+                {% set selected_brands =
+                    request.args.getlist('brand')
+                %}
+
+                <div class="filter-group">
+
+                    <div class="filter-group-title">
+                        <span>Brand</span>
+                    </div>
+
+
+                    <div class="filter-options filter-scroll">
+
+                        {% for item in brands|default([]) %}
+
+                            {% set brand_name =
+                                item.name
+                                if item is mapping
+                                else item
+                            %}
+
+                            <label class="filter-checkbox">
+
+                                <input
+                                    type="checkbox"
+                                    name="brand"
+                                    value="{{ brand_name }}"
+                                    {% if brand_name in selected_brands %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <span class="custom-checkbox">
+                                    ✓
+                                </span>
+
+                                <span>
+                                    {{ brand_name }}
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     PRICE
+                ================================= -->
+
+                <div class="filter-group">
+
+                    <div class="filter-group-title">
+
+                        <span>
+                            Price
+                        </span>
+
+                        {% if category_data.price_range|default({}) %}
+
+                            <small>
+                                ₹{{ "{:,.0f}".format(
+                                    category_data.price_range.min|float
+                                ) }}
+                                –
+                                ₹{{ "{:,.0f}".format(
+                                    category_data.price_range.max|float
+                                ) }}
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="price-input-grid">
+
+                        <input
+                            type="number"
+                            name="min_price"
+                            placeholder="Min"
+                            value="{{ min_price|default('') }}"
+                            min="0"
+                        >
+
+                        <span>–</span>
+
+                        <input
+                            type="number"
+                            name="max_price"
+                            placeholder="Max"
+                            value="{{ max_price|default('') }}"
+                            min="0"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     RATING
+                ================================= -->
+
+                <div class="filter-group">
+
+                    <div class="filter-group-title">
+                        <span>Rating</span>
+                    </div>
+
+
+                    {% set current_rating =
+                        request.args.get('min_rating', '')
+                    %}
+
+
+                    <div class="rating-options">
+
+                        {% for rating in [4, 3, 2, 1] %}
+
+                            <label class="rating-filter-option">
+
+                                <input
+                                    type="radio"
+                                    name="min_rating"
+                                    value="{{ rating }}"
+                                    {% if current_rating == rating|string %}
+                                        checked
+                                    {% endif %}
+                                >
+
+                                <span class="rating-stars">
+                                    {% for i in range(5) %}
+                                        {% if i < rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+
+                                <span>
+                                    & up
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================
+                     AVAILABILITY
+                ================================= -->
+
+                <div class="filter-group">
+
+                    <div class="filter-group-title">
+                        <span>Availability</span>
+                    </div>
+
+
+                    {% set current_stock =
+                        request.args.get('stock', '')
+                    %}
+
+                    <label class="filter-checkbox">
+
+                        <input
+                            type="checkbox"
+                            name="stock"
+                            value="1"
+                            {% if current_stock %}
+                                checked
+                            {% endif %}
+                        >
+
+                        <span class="custom-checkbox">
+                            ✓
+                        </span>
+
+                        <span>
+                            In Stock
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- =================================================
+                     DYNAMIC CATEGORY FILTERS
+                ================================================== -->
+
+                {% set selected_filter_values = {} %}
+
+                {% for filter_item in dynamic_filters|default([]) %}
+
+                    {% set filter_key =
+                        filter_item.key|default('')
+                    %}
+
+
+                    {% if filter_key
+                          and filter_key not in [
+                              'brand',
+                              'price',
+                              'rating',
+                              'stock'
+                          ]
+                    %}
+
+                        {% set selected_values =
+                            request.args.getlist(filter_key)
+                        %}
+
+
+                        <div class="filter-group dynamic-filter">
+
+                            <div class="filter-group-title">
+
+                                <span>
+                                    {{ filter_item.label|default(filter_key|replace('_', ' ')|title) }}
+                                </span>
+
+                            </div>
+
+
+                            {% if filter_item.type == 'range' %}
+
+                                <div class="dynamic-range">
+
+                                    <input
+                                        type="number"
+                                        name="{{ filter_key }}"
+                                        value="{{ request.args.get(filter_key, '') }}"
+                                        placeholder="Enter value"
+                                    >
+
+                                </div>
+
+
+                            {% elif filter_item.type == 'rating' %}
+
+                                <div class="rating-options">
+
+                                    {% for value in [5, 4, 3, 2, 1] %}
+
+                                        <label
+                                            class="rating-filter-option"
+                                        >
+
+                                            <input
+                                                type="radio"
+                                                name="{{ filter_key }}"
+                                                value="{{ value }}"
+                                                {% if request.args.get(filter_key) == value|string %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                            <span class="rating-stars">
+                                                {% for star in range(5) %}
+                                                    {% if star < value %}
+                                                        ★
+                                                    {% else %}
+                                                        ☆
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </span>
+
+                                        </label>
+
+                                    {% endfor %}
+
+                                </div>
+
+
+                            {% else %}
+
+                                <div class="filter-options filter-scroll">
+
+                                    {% for option in filter_item.options|default([]) %}
+
+                                        <label class="filter-checkbox">
+
+                                            <input
+                                                type="checkbox"
+                                                name="{{ filter_key }}"
+                                                value="{{ option }}"
+                                                {% if option|string in selected_values %}
+                                                    checked
+                                                {% endif %}
+                                            >
+
+                                            <span class="custom-checkbox">
+                                                ✓
+                                            </span>
+
+                                            <span>
+                                                {{ option }}
+                                            </span>
+
+                                        </label>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                <!-- FILTER ACTIONS -->
+
+                <div class="filter-actions">
+
+                    <button
+                        type="submit"
+                        class="button-primary filter-apply-button">
+
+                        Apply Filters
+                        <span>→</span>
+
+                    </button>
+
+
+                    <a
+                        href="{{ url_for('search') }}"
+                        class="filter-reset-button">
+
+                        Reset all
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </aside>
+
+
+        <!-- FILTER OVERLAY -->
+
+        <div class="filter-overlay"
+             data-filter-overlay></div>
+
+
+        <!-- =================================================
+             RESULTS AREA
+        ================================================== -->
+
+        <div class="search-results-area">
+
+
+            <!-- RESULT TOOLBAR -->
+
+            <div class="results-toolbar">
+
+                <div class="results-count">
+
+                    <strong>
+                        {{ total_results|default(0) }}
+                    </strong>
+
+                    <span>
+                        products
+                    </span>
+
+                    {% if query %}
+
+                        <span class="toolbar-query">
+                            for “{{ query }}”
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="toolbar-actions">
+
+                    <div class="view-switcher">
+
+                        <button
+                            type="button"
+                            class="view-button active"
+                            data-view="grid"
+                            aria-label="Grid view">
+                            ▦
+                        </button>
+
+                        <button
+                            type="button"
+                            class="view-button"
+                            data-view="list"
+                            aria-label="List view">
+                            ☰
+                        </button>
+
+                    </div>
+
+
+                    <form
+                        action="{{ url_for('search') }}"
+                        method="GET"
+                        class="sort-form"
+                    >
+
+                        {% if query %}
+                            <input
+                                type="hidden"
+                                name="q"
+                                value="{{ query }}"
+                            >
+                        {% endif %}
+
+                        {% if category %}
+                            <input
+                                type="hidden"
+                                name="category"
+                                value="{{ category }}"
+                            >
+                        {% endif %}
+
+                        {% if subcategory %}
+                            <input
+                                type="hidden"
+                                name="subcategory"
+                                value="{{ subcategory }}"
+                            >
+                        {% endif %}
+
+                        <label>
+                            Sort:
+                        </label>
+
+                        <select
+                            name="sort"
+                            onchange="this.form.submit()"
+                        >
+
+                            <option
+                                value=""
+                                {% if not sort %}
+                                    selected
+                                {% endif %}
+                            >
+                                Recommended
+                            </option>
+
+                            <option
+                                value="price_low"
+                                {% if sort == 'price_low' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Price: Low to High
+                            </option>
+
+                            <option
+                                value="price_high"
+                                {% if sort == 'price_high' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Price: High to Low
+                            </option>
+
+                            <option
+                                value="rating"
+                                {% if sort == 'rating' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Highest Rated
+                            </option>
+
+                            <option
+                                value="discount"
+                                {% if sort == 'discount' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Best Discount
+                            </option>
+
+                            <option
+                                value="newest"
+                                {% if sort == 'newest' %}
+                                    selected
+                                {% endif %}
+                            >
+                                Newest
+                            </option>
+
+                        </select>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE FILTERS -->
+
+            {% set active_brands =
+                request.args.getlist('brand')
+            %}
+
+            {% set active_min =
+                request.args.get('min_price', '')
+            %}
+
+            {% set active_max =
+                request.args.get('max_price', '')
+            %}
+
+            {% set active_rating =
+                request.args.get('min_rating', '')
+            %}
+
+
+            {% if active_brands
+                  or active_min
+                  or active_max
+                  or active_rating
+                  or category
+                  or subcategory
+                  or query
+            %}
+
+                <div class="active-filters">
+
+                    <span class="active-filters-label">
+                        Active:
+                    </span>
+
+
+                    {% if query %}
+
+                        <span class="active-filter-chip">
+
+                            Search:
+                            {{ query }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if category %}
+
+                        <span class="active-filter-chip">
+
+                            {{ category }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if subcategory %}
+
+                        <span class="active-filter-chip">
+
+                            {{ subcategory }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% for selected_brand in active_brands %}
+
+                        <span class="active-filter-chip">
+
+                            {{ selected_brand }}
+
+                        </span>
+
+                    {% endfor %}
+
+
+                    {% if active_min or active_max %}
+
+                        <span class="active-filter-chip">
+
+                            ₹{{ active_min|default('0') }}
+                            –
+                            ₹{{ active_max|default('∞') }}
+
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if active_rating %}
+
+                        <span class="active-filter-chip">
+
+                            ★ {{ active_rating }}+
+
+                        </span>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{{ url_for('search') }}"
+                        class="clear-active-filters">
+
+                        Clear all
+
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 PRODUCT GRID
+            ================================================== -->
+
+            {% if products|default([]) %}
+
+                <div class="search-product-grid"
+                     data-results-grid>
+
+                    {% for product in products %}
+
+                        <article
+                            class="product-card search-product-card"
+                            data-product-card
+                        >
+
+                            <!-- IMAGE -->
+
+                            <div class="product-image-wrap">
+
+                                <a
+                                    href="{{ url_for('product_detail', product_id=product.id) }}"
+                                    class="product-image-link"
+                                >
+
+                                    {% if product.image %}
+
+                                        <img
+                                            src="{{ product.image }}"
+                                            alt="{{ product.name }}"
+                                            class="product-image"
+                                            loading="lazy"
+                                            data-product-image
+                                            onerror="this.onerror=null;this.src='/static/images/products/product-placeholder.svg';"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="product-image-placeholder">
+                                            <span>SC</span>
+                                        </div>
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                {% if product.mrp|float > product.price|float %}
+
+                                    {% set discount =
+                                        ((product.mrp|float - product.price|float)
+                                        / product.mrp|float * 100)|round|int
+                                    %}
+
+                                    <span class="discount-badge">
+                                        -{{ discount }}%
+                                    </span>
+
+                                {% endif %}
+
+
+                                {% if product.rating|float >= 4.5 %}
+
+                                    <span class="top-rated-badge">
+                                        Top Rated
+                                    </span>
+
+                                {% endif %}
+
+
+                                <button
+                                    type="button"
+                                    class="quick-compare"
+                                    data-compare-product="{{ product.id }}"
+                                >
+                                    ⇄ Compare
+                                </button>
+
+                            </div>
+
+
+                            <!-- BODY -->
+
+                            <div class="product-card-body">
+
+                                <div class="product-brand-row">
+
+                                    <span class="product-brand">
+
+                                        {{ product.brand|default('SmartCart') }}
+
+                                    </span>
+
+
+                                    {% if product.rating|float > 0 %}
+
+                                        <span class="product-rating">
+
+                                            ★
+                                            {{ "%.1f"|format(product.rating|float) }}
+
+                                            {% if product.reviews|default(0)|int > 0 %}
+                                                <small>
+                                                    ({{ product.reviews }})
+                                                </small>
+                                            {% endif %}
+
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <a
+                                    href="{{ url_for('product_detail', product_id=product.id) }}"
+                                    class="product-title"
+                                >
+
+                                    {{ product.name }}
+
+                                </a>
+
+
+                                {% if product.description %}
+
+                                    <p class="product-description">
+
+                                        {{ product.description
+                                           |truncate(100, True, '...') }}
+
+                                    </p>
+
+                                {% endif %}
+
+
+                                <!-- SPEC PREVIEW -->
+
+                                {% if product.specs|default([]) %}
+
+                                    <div class="product-spec-preview">
+
+                                        {% for spec_name, spec_value in (product.specs.items()|list)[:3] %}
+
+                                            <span>
+
+                                                <b>
+                                                    {{ spec_name }}:
+                                                </b>
+
+                                                {{ spec_value }}
+
+                                            </span>
+
+                                        {% endfor %}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- PRICE -->
+
+                                <div class="product-price-row">
+
+                                    <strong class="product-price">
+
+                                        ₹{{ "{:,.0f}".format(
+                                            product.price|float
+                                        ) }}
+
+                                    </strong>
+
+
+                                    {% if product.mrp|float > product.price|float %}
+
+                                        <del class="product-mrp">
+
+                                            ₹{{ "{:,.0f}".format(
+                                                product.mrp|float
+                                            ) }}
+
+                                        </del>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- STOCK -->
+
+                                <div class="product-stock">
+
+                                    {% if product.stock|int > 0 %}
+
+                                        <span class="stock-dot"></span>
+
+                                        In Stock
+
+                                    {% else %}
+
+                                        <span class="stock-dot out"></span>
+
+                                        Currently unavailable
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- ACTIONS -->
+
+                                <div class="product-actions">
+
+                                    <a
+                                        href="{{ url_for('product_detail', product_id=product.id) }}"
+                                        class="product-view-button"
+                                    >
+
+                                        View Details
+                                        <span>→</span>
+
+                                    </a>
+
+
+                                    <a
+                                        href="{{ url_for('add_to_compare', product_id=product.id) }}"
+                                        class="product-compare-button"
+                                    >
+
+                                        ⇄
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- =================================================
+                     PAGINATION
+                ================================================== -->
+
+                {% if total_pages|default(1) > 1 %}
+
+                    <nav class="pagination">
+
+                        {% if page|int > 1 %}
+
+                            <a
+                                class="pagination-button"
+                                href="{{ url_for(
+                                    'search',
+                                    q=query,
+                                    category=category,
+                                    subcategory=subcategory,
+                                    page=page|int - 1,
+                                    sort=sort
+                                ) }}"
+                            >
+                                ←
+                            </a>
+
+                        {% endif %}
+
+
+                        {% set start_page =
+                            [1, page|int - 2]|max
+                        %}
+
+                        {% set end_page =
+                            [total_pages|int, page|int + 2]|min
+                        %}
+
+
+                        {% for page_number in range(
+                            start_page,
+                            end_page + 1
+                        ) %}
+
+                            <a
+                                href="{{ url_for(
+                                    'search',
+                                    q=query,
+                                    category=category,
+                                    subcategory=subcategory,
+                                    page=page_number,
+                                    sort=sort
+                                ) }}"
+                                class="pagination-button
+                                {% if page_number == page|int %}
+                                    active
+                                {% endif %}"
+                            >
+
+                                {{ page_number }}
+
+                            </a>
+
+                        {% endfor %}
+
+
+                        {% if page|int < total_pages|int %}
+
+                            <a
+                                class="pagination-button"
+                                href="{{ url_for(
+                                    'search',
+                                    q=query,
+                                    category=category,
+                                    subcategory=subcategory,
+                                    page=page|int + 1,
+                                    sort=sort
+                                ) }}"
+                            >
+                                →
+                            </a>
+
+                        {% endif %}
+
+                    </nav>
+
+                {% endif %}
+
+
+            {% else %}
+
+                <!-- =================================================
+                     EMPTY SEARCH
+                ================================================== -->
+
+                <div class="empty-search">
+
+                    <div class="empty-search-icon">
+                        ⌕
+                    </div>
+
+                    <h2>
+                        No products found
+                    </h2>
+
+                    <p>
+
+                        {% if query %}
+
+                            We couldn't find products matching
+                            “{{ query }}”.
+
+                        {% else %}
+
+                            Try changing your filters or
+                            exploring another category.
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <div class="empty-search-actions">
+
+                        <a
+                            href="{{ url_for('search') }}"
+                            class="button-primary"
+                        >
+
+                            Clear Filters
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a
+                            href="{{ url_for('index') }}"
+                            class="button-secondary"
+                        >
+
+                            Back Home
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     COMPARE FLOATING BAR
+========================================================= -->
+
+<div class="compare-floating-bar"
+     data-compare-bar>
+
+    <div class="container compare-floating-inner">
+
+        <div>
+
+            <strong>
+                Compare products
+            </strong>
+
+            <span data-compare-count>
+                0 selected
+            </span>
+
+        </div>
+
+
+        <div class="compare-floating-actions">
+
+            <button
+                type="button"
+                data-clear-compare>
+                Clear
+            </button>
+
+            <button
+                type="button"
+                class="button-primary"
+                data-open-compare>
+
+                Compare Now
+                <span>→</span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+
+<footer class="luxury-footer">
+    <div class="luxury-footer-main">
+        <a class="luxury-brand" href="{{ url_for('index') }}">
+            <span class="luxury-brand-mark">S<span>.</span></span>
+            <span class="luxury-brand-name">SmartCart <em>AI</em></span>
+        </a>
+
+        <p>
+            Discover better products, compare prices and shop with confidence.
+        </p>
+    </div>
+
+    <div class="luxury-footer-links">
+        <a href="{{ url_for('search') }}">Explore products</a>
+        <a href="{{ url_for('deals') }}">Deals</a>
+        <a href="{{ url_for('compare') }}">Compare</a>
+        <a href="{{ url_for('about') }}">About SmartCart</a>
+    </div>
+
+    <div class="luxury-footer-bottom">
+        <span>© {{ now.year if now is defined and now else 2026 }} SmartCart AI</span>
+        <span>Shop smarter. Choose better.</span>
+    </div>
+</footer>

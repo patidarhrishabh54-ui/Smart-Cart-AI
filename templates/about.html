@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+
+{% block title %}About SmartCart AI{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     ABOUT HERO
+========================================================= -->
+
+<section class="about-page-hero">
+
+    <div class="container">
+
+        <div class="about-hero-inner">
+
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                About SmartCart AI
+            </div>
+
+            <h1>
+                Shopping decisions,
+                <span>made smarter.</span>
+            </h1>
+
+            <p>
+                SmartCart AI brings product discovery, comparison,
+                price intelligence and product insights together
+                in one simple shopping experience.
+            </p>
+
+            <div class="about-hero-actions">
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-primary"
+                >
+                    Explore Products
+                    <span>→</span>
+                </a>
+
+                <a
+                    href="{{ url_for('compare') }}"
+                    class="button-secondary"
+                >
+                    Compare Products
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     VALUE PROPOSITION
+========================================================= -->
+
+<section class="section about-value-section">
+
+    <div class="container">
+
+        <div class="section-heading center-heading">
+
+            <span class="section-kicker">
+                THE SMARTCART APPROACH
+            </span>
+
+            <h2>
+                More than a product
+                <span>catalogue.</span>
+            </h2>
+
+            <p>
+                The platform is designed around the questions shoppers
+                actually ask before buying.
+            </p>
+
+        </div>
+
+
+        <div class="about-feature-grid">
+
+            <!-- CARD 1 -->
+
+            <article class="about-feature-card">
+
+                <div class="about-feature-number">
+                    01
+                </div>
+
+                <div class="about-feature-icon">
+                    ⌕
+                </div>
+
+                <h3>
+                    Discover
+                </h3>
+
+                <p>
+                    Find products through search, categories,
+                    brands and category-specific filters.
+                </p>
+
+            </article>
+
+
+            <!-- CARD 2 -->
+
+            <article class="about-feature-card">
+
+                <div class="about-feature-number">
+                    02
+                </div>
+
+                <div class="about-feature-icon">
+                    ⇄
+                </div>
+
+                <h3>
+                    Compare
+                </h3>
+
+                <p>
+                    Compare multiple products side by side using
+                    price, rating, stock and available specifications.
+                </p>
+
+            </article>
+
+
+            <!-- CARD 3 -->
+
+            <article class="about-feature-card">
+
+                <div class="about-feature-number">
+                    03
+                </div>
+
+                <div class="about-feature-icon">
+                    ↗
+                </div>
+
+                <h3>
+                    Understand Prices
+                </h3>
+
+                <p>
+                    Review available historical and predicted price
+                    information through the product intelligence view.
+                </p>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PRODUCT INTELLIGENCE
+========================================================= -->
+
+<section class="section about-intelligence-section">
+
+    <div class="container about-intelligence-grid">
+
+        <div class="about-intelligence-copy">
+
+            <span class="section-kicker">
+                PRODUCT INTELLIGENCE
+            </span>
+
+            <h2>
+                Turn product data into
+                <span>useful decisions.</span>
+            </h2>
+
+            <p>
+                SmartCart AI combines the product information available
+                in the catalogue into a cleaner shopping workflow,
+                helping users understand products before they decide.
+            </p>
+
+
+            <div class="about-check-list">
+
+                <div class="about-check-item">
+
+                    <span>✓</span>
+
+                    <div>
+                        <strong>
+                            Product discovery
+                        </strong>
+
+                        <small>
+                            Search and browse across catalogue products.
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="about-check-item">
+
+                    <span>✓</span>
+
+                    <div>
+                        <strong>
+                            Category-specific filtering
+                        </strong>
+
+                        <small>
+                            Surface relevant product attributes where available.
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="about-check-item">
+
+                    <span>✓</span>
+
+                    <div>
+                        <strong>
+                            Side-by-side comparison
+                        </strong>
+
+                        <small>
+                            Review multiple products together.
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="about-check-item">
+
+                    <span>✓</span>
+
+                    <div>
+                        <strong>
+                            Price insights
+                        </strong>
+
+                        <small>
+                            Explore historical and forecast information
+                            when available for a product.
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- VISUAL -->
+
+        <div class="about-dashboard">
+
+            <div class="about-dashboard-header">
+
+                <div>
+
+                    <span>
+                        SMARTCART AI
+                    </span>
+
+                    <strong>
+                        Product Intelligence
+                    </strong>
+
+                </div>
+
+                <span class="dashboard-status">
+                    ● ACTIVE
+                </span>
+
+            </div>
+
+
+            <div class="about-dashboard-product">
+
+                <div class="dashboard-product-image">
+
+                    <div class="dashboard-product-placeholder">
+                        SC
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-product-info">
+
+                    <span>
+                        PRODUCT
+                    </span>
+
+                    <strong>
+                        Compare before buying
+                    </strong>
+
+                    <small>
+                        Price · Rating · Specs · Stock
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="about-dashboard-stats">
+
+                <div>
+
+                    <span>
+                        PRICE
+                    </span>
+
+                    <strong>
+                        ₹ —
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        RATING
+                    </span>
+
+                    <strong>
+                        ★ —
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        STOCK
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="about-dashboard-chart">
+
+                <div class="chart-line chart-line-one"></div>
+
+                <div class="chart-line chart-line-two"></div>
+
+                <div class="chart-axis"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     WORKFLOW
+========================================================= -->
+
+<section class="section about-workflow-section">
+
+    <div class="container">
+
+        <div class="section-heading center-heading">
+
+            <span class="section-kicker">
+                HOW IT WORKS
+            </span>
+
+            <h2>
+                From search to
+                <span>decision.</span>
+            </h2>
+
+        </div>
+
+
+        <div class="workflow-grid">
+
+            <div class="workflow-item">
+
+                <div class="workflow-step">
+                    1
+                </div>
+
+                <h3>
+                    Search
+                </h3>
+
+                <p>
+                    Search for a product, brand or category.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-connector"></div>
+
+
+            <div class="workflow-item">
+
+                <div class="workflow-step">
+                    2
+                </div>
+
+                <h3>
+                    Filter
+                </h3>
+
+                <p>
+                    Narrow products using relevant filters.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-connector"></div>
+
+
+            <div class="workflow-item">
+
+                <div class="workflow-step">
+                    3
+                </div>
+
+                <h3>
+                    Compare
+                </h3>
+
+                <p>
+                    Select products and compare them together.
+                </p>
+
+            </div>
+
+
+            <div class="workflow-connector"></div>
+
+
+            <div class="workflow-item">
+
+                <div class="workflow-step">
+                    4
+                </div>
+
+                <h3>
+                    Decide
+                </h3>
+
+                <p>
+                    Use the available product and price insights
+                    to make an informed choice.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TRUST / DATA NOTE
+========================================================= -->
+
+<section class="section about-note-section">
+
+    <div class="container">
+
+        <div class="about-note">
+
+            <div class="about-note-icon">
+                i
+            </div>
+
+            <div>
+
+                <span class="section-kicker">
+                    IMPORTANT
+                </span>
+
+                <h3>
+                    Transparent product information
+                </h3>
+
+                <p>
+                    SmartCart AI displays information available in
+                    its product catalogue and connected data sources.
+                    Price history, forecasts, store information and
+                    product images should be interpreted according to
+                    the data available for each product.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FINAL CTA
+========================================================= -->
+
+<section class="section final-cta-section">
+
+    <div class="container">
+
+        <div class="final-cta">
+
+            <div>
+
+                <span class="section-kicker">
+                    START SHOPPING SMARTER
+                </span>
+
+                <h2>
+                    Ready to find your
+                    <span>next product?</span>
+                </h2>
+
+                <p>
+                    Explore the catalogue and start comparing.
+                </p>
+
+            </div>
+
+
+            <div class="final-cta-actions">
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-primary"
+                >
+                    Explore Products
+                    <span>→</span>
+                </a>
+
+                <a
+                    href="{{ url_for('deals') }}"
+                    class="button-secondary"
+                >
+                    View Deals
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

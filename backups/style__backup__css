@@ -1,0 +1,12 @@
+:root { --ink:#172033; --muted:#64748b; }
+body { background:#f5f7fb; color:var(--ink); min-height:100vh; }
+.hero { background:linear-gradient(120deg,#182848,#4b6cb7); box-shadow:0 12px 30px rgba(28,45,90,.18); }
+.hero-icon { font-size:7rem; filter:drop-shadow(0 8px 12px rgba(0,0,0,.2)); }
+.stat-card,.product-card,.filter-panel { background:white; border:1px solid #e7ebf2; border-radius:16px; padding:20px; box-shadow:0 4px 16px rgba(15,23,42,.04); }
+.stat-card h3 { font-weight:800; margin:8px 0 0; }
+.product-card { transition:transform .18s, box-shadow .18s; }
+.product-card:hover { transform:translateY(-3px); box-shadow:0 12px 28px rgba(15,23,42,.1); }
+.product-emoji { font-size:2.5rem; margin-bottom:12px; }
+.price { font-size:1.35rem; font-weight:800; color:#155eef; margin:8px 0; }
+.table { background:white; border-radius:12px; overflow:hidden; }
+footer { margin-top:3rem; }

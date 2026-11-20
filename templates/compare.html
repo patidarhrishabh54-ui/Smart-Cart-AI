@@ -1,0 +1,784 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Products — SmartCart AI{% endblock %}
+
+{% block content %}
+
+<section class="compare-page">
+
+    <div class="container">
+
+        <!-- =====================================================
+             HEADER
+        ====================================================== -->
+
+        <div class="compare-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    <span class="eyebrow-dot"></span>
+                    SmartCart AI · Comparison
+                </div>
+
+                <h1>
+                    Compare products
+                    <span>side by side.</span>
+                </h1>
+
+                <p>
+                    Review price, rating, stock, brand,
+                    category and available specifications
+                    before making your decision.
+                </p>
+
+            </div>
+
+
+            <div class="compare-count">
+
+                <strong>
+                    {{ products|default([])|length }}
+                </strong>
+
+                <span>
+                    products selected
+                </span>
+
+            </div>
+
+        </div>
+
+
+        {% if products|default([])|length > 0 %}
+
+        <!-- =====================================================
+             SELECTED PRODUCTS
+        ====================================================== -->
+
+        <div class="compare-selected">
+
+            {% for product in products %}
+
+            <div class="compare-selected-card">
+
+                <div class="compare-selected-image">
+
+                    {% if product.image %}
+
+                    <img
+                        src="{{ product.image }}"
+                        alt="{{ product.name }}"
+                        data-product-image
+                    >
+
+                    {% else %}
+
+                    <div class="product-image-placeholder">
+                        <span>SC</span>
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="compare-selected-info">
+
+                    <strong>
+                        {{ product.name }}
+                    </strong>
+
+                    <span>
+                        ₹{{ "{:,.0f}".format(product.price|float) }}
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- =====================================================
+             MAIN COMPARISON TABLE
+        ====================================================== -->
+
+        <div class="compare-table-wrap">
+
+            <table class="compare-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Product Details
+                        </th>
+
+
+                        {% for product in products %}
+
+                        <th>
+
+                            <div class="compare-product-head">
+
+                                {% if product.image %}
+
+                                <img
+                                    src="{{ product.image }}"
+                                    alt="{{ product.name }}"
+                                    data-product-image
+                                >
+
+                                {% else %}
+
+                                <div class="product-image-placeholder">
+                                    <span>SC</span>
+                                </div>
+
+                                {% endif %}
+
+
+                                <strong>
+                                    {{ product.name }}
+                                </strong>
+
+
+                                {% if product.brand %}
+
+                                <span>
+                                    {{ product.brand }}
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <!-- PRICE -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Current Price</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            <div class="compare-price">
+
+                                ₹{{ "{:,.0f}".format(
+                                    product.price|float
+                                ) }}
+
+                            </div>
+
+                            {% if product.mrp|float > product.price|float %}
+
+                            <small>
+
+                                MRP:
+                                ₹{{ "{:,.0f}".format(
+                                    product.mrp|float
+                                ) }}
+
+                            </small>
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- SAVINGS -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Saving</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% set saving =
+                                product.mrp|float -
+                                product.price|float
+                            %}
+
+                            {% if saving > 0 %}
+
+                            <span class="compare-stock">
+                                Save ₹{{ "{:,.0f}".format(saving) }}
+                            </span>
+
+                            {% else %}
+
+                            <span>
+                                —
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- BRAND -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Brand</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+                            {{ product.brand|default("—") }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- CATEGORY -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Category</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+                            {{ product.category|default("—") }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- RATING -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Rating</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% if product.rating|float > 0 %}
+
+                            <span class="compare-rating">
+                                ★ {{ "%.1f"|format(
+                                    product.rating|float
+                                ) }}
+                            </span>
+
+                            {% if product.reviews|default(0)|int > 0 %}
+
+                            <small>
+                                ({{ product.reviews }} reviews)
+                            </small>
+
+                            {% endif %}
+
+                            {% else %}
+
+                            —
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- STOCK -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Availability</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% if product.stock|default(0)|int > 0 %}
+
+                            <span class="compare-stock">
+                                ● In Stock
+                            </span>
+
+                            {% else %}
+
+                            <span style="color:#f04438;">
+                                ● Out of Stock
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- PLATFORM -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Platform / Store</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+                            {{ product.platform|default("—") }}
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Description</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% if product.description %}
+
+                            {{ product.description|truncate(
+                                180,
+                                True,
+                                "..."
+                            ) }}
+
+                            {% else %}
+
+                            —
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+
+                    <!-- =================================================
+                         DYNAMIC SPECIFICATIONS
+                    ================================================== -->
+
+                    {% set all_spec_names = [] %}
+
+                    {% for product in products %}
+
+                        {% for spec in product.specs|default([]) %}
+
+                            {% if spec.name not in all_spec_names %}
+
+                                {% set _ =
+                                    all_spec_names.append(spec.name)
+                                %}
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endfor %}
+
+
+                    {% for spec_name in all_spec_names %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ spec_name }}
+                            </strong>
+                        </td>
+
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% set found_value = "" %}
+
+                            {% for spec in product.specs|default([]) %}
+
+                                {% if spec.name == spec_name %}
+
+                                    {% set found_value = spec.value %}
+
+                                {% endif %}
+
+                            {% endfor %}
+
+
+                            {% if found_value %}
+
+                                {{ found_value }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                    <!-- =================================================
+                         STORE COMPARISON
+                    ================================================== -->
+
+                    {% if store_comparisons|default([]) %}
+
+                    <tr>
+
+                        <td>
+                            <strong>Store Prices</strong>
+                        </td>
+
+                        {% for product in products %}
+
+                        <td>
+
+                            {% set product_id =
+                                product.id|string
+                            %}
+
+                            {% set current_stores = [] %}
+
+                            {% for comparison in store_comparisons %}
+
+                                {% if comparison.product_id|string
+                                    == product_id %}
+
+                                    {% set current_stores =
+                                        comparison.stores|default([])
+                                    %}
+
+                                {% endif %}
+
+                            {% endfor %}
+
+
+                            {% if current_stores %}
+
+                            <div class="mini-store-list">
+
+                                {% for store in current_stores %}
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        align-items:center;
+                                        justify-content:space-between;
+                                        gap:10px;
+                                        padding:7px 0;
+                                        border-bottom:1px solid #f0f2f5;
+                                    "
+                                >
+
+                                    <span>
+
+                                        {{ store.store_name|default(
+                                            store.name|default("Store")
+                                        ) }}
+
+                                    </span>
+
+
+                                    <strong>
+
+                                        {% if store.price is defined %}
+
+                                        ₹{{ "{:,.0f}".format(
+                                            store.price|float
+                                        ) }}
+
+                                        {% else %}
+
+                                        —
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                            {% else %}
+
+                            <span>
+                                Store price unavailable
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                    {% endif %}
+
+
+                    <!-- ACTIONS -->
+
+                    <tr>
+
+                        <td>
+                            <strong>Actions</strong>
+                        </td>
+
+
+                        {% for product in products %}
+
+                        <td>
+
+                            <div class="compare-actions">
+
+                                <a
+                                    href="{{ url_for(
+                                        'product_detail',
+                                        product_id=product.id
+                                    ) }}"
+                                    class="primary"
+                                >
+                                    View Details
+                                </a>
+
+
+                                {% if product.product_url
+                                    and product.product_url != "#" %}
+
+                                <a
+                                    href="{{ product.product_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="secondary"
+                                >
+                                    Visit Store
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </td>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =====================================================
+             COMPARE INFORMATION
+        ====================================================== -->
+
+        <div class="deal-info-panel">
+
+            <div class="deal-info-icon">
+                ⇄
+            </div>
+
+            <div>
+
+                <span class="section-kicker">
+                    SMART COMPARISON
+                </span>
+
+                <h3>
+                    Compare the differences, not just the price.
+                </h3>
+
+                <p>
+                    Use the comparison table to review available
+                    specifications, ratings, stock information and
+                    price details together. Product attributes shown
+                    here depend on the information available in the
+                    catalogue.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             DISCOVER MORE
+        ====================================================== -->
+
+        <section class="section">
+
+            <div class="section-heading">
+
+                <span class="section-kicker">
+                    NEED MORE OPTIONS?
+                </span>
+
+                <h2>
+                    Discover more
+                    <span>products.</span>
+                </h2>
+
+                <p>
+                    Search the catalogue to find similar products
+                    and add them to your comparison.
+                </p>
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    flex-wrap:wrap;
+                    gap:10px;
+                "
+            >
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-primary"
+                >
+                    Search Products
+                    <span>→</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('deals') }}"
+                    class="button-secondary"
+                >
+                    View Deals
+                </a>
+
+
+                <a
+                    href="{{ url_for('index') }}"
+                    class="button-secondary"
+                >
+                    Back to Home
+                </a>
+
+            </div>
+
+        </section>
+
+
+        {% else %}
+
+        <!-- =====================================================
+             EMPTY COMPARISON
+        ====================================================== -->
+
+        <div class="empty-search">
+
+            <div class="empty-search-icon">
+                ⇄
+            </div>
+
+            <h2>
+                No products to compare yet
+            </h2>
+
+            <p>
+                Search the catalogue and add 2–4 products
+                to see a detailed side-by-side comparison.
+            </p>
+
+
+            <div class="empty-search-actions">
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-primary"
+                >
+                    Find Products
+                    <span>→</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('deals') }}"
+                    class="button-secondary"
+                >
+                    Explore Deals
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

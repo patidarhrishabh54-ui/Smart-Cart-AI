@@ -1,0 +1,27 @@
+
+<nav class="luxury-navbar" aria-label="Main navigation">
+    <a class="luxury-brand" href="{{ url_for('index') }}">
+        <span class="luxury-brand-mark">S<span>.</span></span>
+        <span class="luxury-brand-name">SmartCart <em>AI</em></span>
+    </a>
+
+    <div class="luxury-navbar-links">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('search') }}">Shop</a>
+        <a href="{{ url_for('deals') }}">Deals</a>
+        <a href="{{ url_for('compare') }}">Compare</a>
+        <a href="{{ url_for('about') }}">About</a>
+    </div>
+
+    <div class="luxury-navbar-actions">
+        <a href="{{ url_for('search') }}" aria-label="Search products">
+            Search <span aria-hidden="true">⌕</span>
+        </a>
+
+        {% if current_user %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+        <a href="{{ url_for('auth') }}">Sign in</a>
+        {% endif %}
+    </div>
+</nav>

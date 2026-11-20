@@ -1,0 +1,53 @@
+{% set p = product %}
+
+<article class="luxury-product-card">
+    <a class="luxury-product-image"
+       href="{{ url_for('product_detail', product_id=p.id) }}">
+
+        {% if p.discount|default(0, true)|float > 0 %}
+        <span class="luxury-product-badge">
+            {{ p.discount|round|int }}% OFF
+        </span>
+        {% endif %}
+
+        <img
+            src="{{ p.image_url|default(p.image|default('', true), true) or url_for('static', filename='images/products/product-placeholder.svg') }}"
+            alt="{{ p.name|default('Product', true) }}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='/static/images/products/product-placeholder.svg';"
+            class="product-card-img">
+
+        <span class="luxury-product-view">View product ↗</span>
+    </a>
+
+    <div class="luxury-product-info">
+        <span class="luxury-product-category">
+            {{ p.category|default('DISCOVER', true) }}
+        </span>
+
+        <h3>
+            <a href="{{ url_for('product_detail', product_id=p.id) }}">
+                {{ p.name|default('Untitled product', true) }}
+            </a>
+        </h3>
+
+        <div class="luxury-product-price">
+            <strong>{{ money(p.price|default(0, true)) }}</strong>
+
+            {% if p.mrp|default(0, true)|float > p.price|default(0, true)|float %}
+            <del>{{ money(p.mrp) }}</del>
+            {% endif %}
+        </div>
+
+        {% if p.rating|default(0, true)|float > 0 %}
+        <div class="luxury-product-rating">
+            <span>★</span> {{ p.rating }}
+        </div>
+        {% endif %}
+
+        <a class="luxury-product-compare"
+           href="{{ url_for('product_detail', product_id=p.id) }}">
+            View details <span>↗</span>
+        </a>
+    </div>
+</article>

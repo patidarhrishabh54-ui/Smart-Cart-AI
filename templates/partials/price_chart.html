@@ -1,0 +1,56 @@
+
+<section class="price-history-section" aria-labelledby="price-history-title">
+    <div class="price-history-heading">
+        <div>
+            <span class="luxury-section-kicker">PRICE INTELLIGENCE</span>
+            <h2 id="price-history-title">Price <em>history</em></h2>
+            <p class="luxury-section-description">
+                Review recorded prices for this product over time.
+            </p>
+        </div>
+    </div>
+
+    {% set chart_history = history|default(price_history|default([], true), true) %}
+
+    {% if chart_history %}
+    <div class="price-chart-card">
+        <div class="price-chart-summary">
+            <span>{{ chart_history|length }} recorded price entries</span>
+        </div>
+
+        <div class="price-chart-table-wrap">
+            <table class="price-history-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in chart_history %}
+                    <tr>
+                        <td>
+                            {{ entry.recorded_at|default(entry.created_at|default(entry.id|default('—', true), true), true) }}
+                        </td>
+                        <td>
+                            <strong>{{ money(entry.price|default(0, true)) }}</strong>
+                        </td>
+                        <td>{{ entry.source|default('SmartCart', true) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="price-chart-empty">
+        <span class="price-chart-empty-icon" aria-hidden="true">↗</span>
+        <h3>No price history yet</h3>
+        <p>
+            Historical price records are not available for this product yet.
+            Check back when more prices have been recorded.
+        </p>
+    </div>
+    {% endif %}
+</section>

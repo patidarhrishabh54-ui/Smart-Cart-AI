@@ -1,0 +1,48 @@
+{% set p = product|default({}, true) %}
+
+<article class="luxury-product-card luxury-offer-card">
+    <a class="luxury-product-image"
+       href="{{ url_for('product_detail', product_id=p.id) }}">
+
+        <span class="luxury-product-badge">
+            {% if p.discount|default(0, true)|float > 0 %}
+                {{ p.discount|round|int }}% OFF
+            {% else %}
+                SPECIAL OFFER
+            {% endif %}
+        </span>
+
+        <img
+            src="{{ p.image_url|default(p.image|default('', true), true) or url_for('static', filename='images/products/product-placeholder.svg') }}"
+            alt="{{ p.name|default('Product', true) }}"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='/static/images/products/product-placeholder.svg';">
+
+        <span class="luxury-product-view">View offer ↗</span>
+    </a>
+
+    <div class="luxury-product-info">
+        <span class="luxury-product-category">
+            {{ p.category|default('SPECIAL OFFER', true) }}
+        </span>
+
+        <h3>
+            <a href="{{ url_for('product_detail', product_id=p.id) }}">
+                {{ p.name|default('Untitled product', true) }}
+            </a>
+        </h3>
+
+        <div class="luxury-product-price">
+            <strong>{{ money(p.price|default(0, true)) }}</strong>
+
+            {% if p.mrp|default(0, true)|float > p.price|default(0, true)|float %}
+                <del>{{ money(p.mrp) }}</del>
+            {% endif %}
+        </div>
+
+        <a class="luxury-product-compare"
+           href="{{ url_for('product_detail', product_id=p.id) }}">
+            View offer <span>↗</span>
+        </a>
+    </div>
+</article>

@@ -1,0 +1,551 @@
+{% extends "base.html" %}
+
+{% block title %}Today's Deals — SmartCart AI{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     DEALS HERO
+========================================================= -->
+
+<section class="deals-page-hero">
+
+    <div class="container deals-hero-grid">
+
+        <div class="deals-hero-copy">
+
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                SmartCart AI · Deals
+            </div>
+
+            <h1>
+                Better prices.
+                <span>Better decisions.</span>
+            </h1>
+
+            <p>
+                Explore products where the current catalogue price
+                is below the listed MRP.
+            </p>
+
+
+            <div class="deals-hero-actions">
+
+                <a
+                    href="{{ url_for('search', sort='discount') }}"
+                    class="button-primary"
+                >
+                    Browse all discounts
+                    <span>→</span>
+                </a>
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-secondary"
+                >
+                    Search products
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="deals-hero-visual">
+
+            <div class="deals-orbit orbit-one"></div>
+            <div class="deals-orbit orbit-two"></div>
+
+            <div class="deal-visual-card">
+
+                <div class="deal-visual-top">
+
+                    <span>
+                        TODAY'S OPPORTUNITIES
+                    </span>
+
+                    <strong>
+                        %
+                    </strong>
+
+                </div>
+
+
+                <div class="deal-visual-price">
+
+                    <span>
+                        Compare current price
+                    </span>
+
+                    <strong>
+                        ↓
+                    </strong>
+
+                </div>
+
+
+                <div class="deal-visual-bars">
+
+                    <span style="width: 92%;"></span>
+                    <span style="width: 72%;"></span>
+                    <span style="width: 54%;"></span>
+
+                </div>
+
+
+                <div class="deal-visual-footer">
+
+                    <span>
+                        Current price
+                    </span>
+
+                    <span>
+                        Listed MRP
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     DEALS CONTENT
+========================================================= -->
+
+<section class="section deals-content">
+
+    <div class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="section-heading split-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    AVAILABLE DEALS
+                </span>
+
+                <h2>
+                    Products with
+                    <span>price drops</span>
+                </h2>
+
+                <p>
+                    Current prices below their listed MRP.
+                </p>
+
+            </div>
+
+
+            <div class="deals-result-count">
+
+                <strong>
+                    {{ products|length }}
+                </strong>
+
+                <span>
+                    deals shown
+                </span>
+
+            </div>
+
+        </div>
+
+
+        {% if products|default([]) %}
+
+
+            <!-- =================================================
+                 DEAL GRID
+            ================================================== -->
+
+            <div class="product-grid deals-product-grid">
+
+                {% for product in products %}
+
+                    <article
+                        class="product-card deal-product-card"
+                    >
+
+                        <!-- IMAGE -->
+
+                        <div class="product-image-wrap">
+
+                            <a
+                                href="{{ url_for(
+                                    'product_detail',
+                                    product_id=product.id
+                                ) }}"
+                            >
+
+                                {% if product.image %}
+
+                                    <img
+                                        src="{{ product.image }}"
+                                        alt="{{ product.name }}"
+                                        class="product-image"
+                                        loading="lazy"
+                                        data-product-image
+                                    >
+
+                                {% else %}
+
+                                    <div class="product-image-placeholder">
+                                        <span>SC</span>
+                                    </div>
+
+                                {% endif %}
+
+                            </a>
+
+
+                            {% if product.mrp|float > product.price|float %}
+
+                                {% set discount =
+                                    ((product.mrp|float - product.price|float)
+                                    / product.mrp|float * 100)|round|int
+                                %}
+
+                                <span class="discount-badge">
+                                    -{{ discount }}%
+                                </span>
+
+                            {% endif %}
+
+
+                            <span class="deal-label">
+                                DEAL
+                            </span>
+
+
+                            <button
+                                type="button"
+                                class="quick-compare"
+                                data-compare-product="{{ product.id }}"
+                            >
+                                ⇄ Compare
+                            </button>
+
+                        </div>
+
+
+                        <!-- BODY -->
+
+                        <div class="product-card-body">
+
+                            <div class="product-brand-row">
+
+                                <span class="product-brand">
+                                    {{ product.brand|default('SmartCart') }}
+                                </span>
+
+
+                                {% if product.rating|float > 0 %}
+
+                                    <span class="product-rating">
+
+                                        ★
+                                        {{ "%.1f"|format(
+                                            product.rating|float
+                                        ) }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'product_detail',
+                                    product_id=product.id
+                                ) }}"
+                                class="product-title"
+                            >
+
+                                {{ product.name }}
+
+                            </a>
+
+
+                            {% if product.description %}
+
+                                <p class="product-description">
+
+                                    {{ product.description
+                                       |truncate(95, True, '...') }}
+
+                                </p>
+
+                            {% endif %}
+
+
+                            <!-- PRICE -->
+
+                            <div class="product-price-row">
+
+                                <strong class="product-price">
+
+                                    ₹{{ "{:,.0f}".format(
+                                        product.price|float
+                                    ) }}
+
+                                </strong>
+
+
+                                <del class="product-mrp">
+
+                                    ₹{{ "{:,.0f}".format(
+                                        product.mrp|float
+                                    ) }}
+
+                                </del>
+
+                            </div>
+
+
+                            <!-- SAVING -->
+
+                            <div class="deal-saving-line">
+
+                                {% set saving =
+                                    product.mrp|float -
+                                    product.price|float
+                                %}
+
+                                <strong>
+                                    Save ₹{{ "{:,.0f}".format(saving) }}
+                                </strong>
+
+                                <span>
+                                    vs listed MRP
+                                </span>
+
+                            </div>
+
+
+                            <!-- STOCK -->
+
+                            <div class="product-stock">
+
+                                {% if product.stock|int > 0 %}
+
+                                    <span class="stock-dot"></span>
+
+                                    In Stock
+
+                                {% else %}
+
+                                    <span class="stock-dot out"></span>
+
+                                    Currently unavailable
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- ACTIONS -->
+
+                            <div class="product-actions">
+
+                                <a
+                                    href="{{ url_for(
+                                        'product_detail',
+                                        product_id=product.id
+                                    ) }}"
+                                    class="product-view-button"
+                                >
+
+                                    View Deal
+                                    <span>→</span>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'add_to_compare',
+                                        product_id=product.id
+                                    ) }}"
+                                    class="product-compare-button"
+                                    title="Add to comparison"
+                                >
+
+                                    ⇄
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 EMPTY DEALS
+            ================================================== -->
+
+            <div class="empty-search deals-empty">
+
+                <div class="empty-search-icon">
+                    %
+                </div>
+
+                <h2>
+                    No deals available right now
+                </h2>
+
+                <p>
+                    We couldn't find products with a current
+                    price below their listed MRP.
+                </p>
+
+
+                <div class="empty-search-actions">
+
+                    <a
+                        href="{{ url_for('search') }}"
+                        class="button-primary"
+                    >
+
+                        Browse Products
+                        <span>→</span>
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for(
+                            'search',
+                            sort='price_low'
+                        ) }}"
+                        class="button-secondary"
+                    >
+
+                        View Lowest Prices
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             DEAL EXPLANATION
+        ================================================== -->
+
+        <div class="deal-info-panel">
+
+            <div class="deal-info-icon">
+                ✦
+            </div>
+
+
+            <div>
+
+                <span class="section-kicker">
+                    SMARTCART PRICE CONTEXT
+                </span>
+
+                <h3>
+                    What does a deal mean here?
+                </h3>
+
+                <p>
+                    A product is shown in this section when its
+                    current catalogue price is lower than its
+                    listed MRP. Use the product detail page to
+                    review available price history and other
+                    information before making a decision.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     DEAL CTA
+========================================================= -->
+
+<section class="section final-cta-section">
+
+    <div class="container">
+
+        <div class="final-cta">
+
+            <div>
+
+                <span class="section-kicker">
+                    KEEP EXPLORING
+                </span>
+
+                <h2>
+                    Can't find what you're
+                    <span>looking for?</span>
+                </h2>
+
+                <p>
+                    Search the full SmartCart AI catalogue.
+                </p>
+
+            </div>
+
+
+            <div class="final-cta-actions">
+
+                <a
+                    href="{{ url_for('search') }}"
+                    class="button-primary"
+                >
+
+                    Search Products
+                    <span>→</span>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('compare') }}"
+                    class="button-secondary"
+                >
+
+                    Compare Products
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

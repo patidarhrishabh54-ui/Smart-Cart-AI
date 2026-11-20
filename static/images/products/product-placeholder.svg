@@ -1,0 +1,9 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" rx="20" fill="#f1f3fb"/>
+  <rect x="125" y="65" width="150" height="140" rx="18" fill="#e0e7ff"/>
+  <path d="M155 170l35-38 25 25 20-20 25 33z" fill="#818cf8"/>
+  <circle cx="174" cy="105" r="12" fill="#a5b4fc"/>
+  <text x="200" y="245" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="600" fill="#59627a">SmartCart AI</text>
+  <text x="200" y="267" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#8b93a7">Product image unavailable</text>
+</svg>

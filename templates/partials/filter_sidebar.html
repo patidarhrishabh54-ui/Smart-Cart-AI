@@ -1,0 +1,172 @@
+```jinja2
+{# SmartCart AI — Filter Sidebar #}
+
+<aside class="filter-sidebar" aria-label="Product filters">
+    <div class="filter-sidebar-header">
+        <h2>Filters</h2>
+        <a href="{{ url_for('search') }}" class="filter-reset">Clear all</a>
+    </div>
+
+    <form action="{{ url_for('search') }}" method="GET" class="filter-form">
+
+        {# Preserve the user's search query #}
+        {% if request.args.get('q') %}
+            <input type="hidden" name="q" value="{{ request.args.get('q') }}">
+        {% endif %}
+
+        {% if request.args.get('sort') %}
+            <input type="hidden" name="sort" value="{{ request.args.get('sort') }}">
+        {% endif %}
+
+        {# Category filter #}
+        <section class="filter-group">
+            <h3>Category</h3>
+
+            <select name="category" class="filter-select">
+                <option value="">All categories</option>
+
+                {% for item in categories|default([], true) %}
+                    {% if item is mapping %}
+                        {% set category_name = item.name|default(item.category|default('', true), true) %}
+                    {% else %}
+                        {% set category_name = item %}
+                    {% endif %}
+
+                    {% if category_name %}
+                        <option value="{{ category_name }}"
+                            {% if request.args.get('category', category|default('', true)) == category_name %}selected{% endif %}>
+                            {{ category_name }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </section>
+
+        {# Price range #}
+        <section class="filter-group">
+            <h3>Price range</h3>
+
+            <label for="filter-min-price">Minimum price (₹)</label>
+            <input
+                id="filter-min-price"
+                type="number"
+                name="min_price"
+                min="0"
+                step="1"
+                placeholder="0"
+                value="{{ request.args.get('min_price', min_price|default('', true)) }}"
+            >
+
+            <label for="filter-max-price">Maximum price (₹)</label>
+            <input
+                id="filter-max-price"
+                type="number"
+                name="max_price"
+                min="0"
+                step="1"
+                placeholder="No limit"
+                value="{{ request.args.get('max_price', max_price|default('', true)) }}"
+            >
+        </section>
+
+        {# Minimum rating #}
+        <section class="filter-group">
+            <h3>Customer rating</h3>
+
+            {% set current_rating = request.args.get('rating', rating|default('', true)) %}
+
+            {% for rating_value in [4, 3, 2, 1] %}
+                <label class="filter-option">
+                    <input
+                        type="radio"
+                        name="rating"
+                        value="{{ rating_value }}"
+                        {% if current_rating|string == rating_value|string %}checked{% endif %}
+                    >
+                    <span>{{ rating_value }}★ & above</span>
+                </label>
+            {% endfor %}
+
+            <label class="filter-option">
+                <input
+                    type="radio"
+                    name="rating"
+                    value=""
+                    {% if not current_rating %}checked{% endif %}
+                >
+                <span>Any rating</span>
+            </label>
+        </section>
+
+        {# Brand filter #}
+        <section class="filter-group">
+            <h3>Brand</h3>
+
+            {% set brand_options = brands|default([], true) %}
+
+            {% if brand_options %}
+                {% for item in brand_options %}
+                    {% if item is mapping %}
+                        {% set brand_name = item.name|default(item.brand|default('', true), true) %}
+                    {% else %}
+                        {% set brand_name = item %}
+                    {% endif %}
+
+                    {% if brand_name %}
+                        <label class="filter-option">
+                            <input
+                                type="checkbox"
+                                name="brand"
+                                value="{{ brand_name }}"
+                                {% if brand_name in request.args.getlist('brand') or request.args.get('brand') == brand_name %}checked{% endif %}
+                            >
+                            <span>{{ brand_name }}</span>
+                        </label>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p class="filter-empty">Brand options will appear when available.</p>
+            {% endif %}
+        </section>
+
+        {# Additional category-specific filters #}
+        {% for filter_item in dynamic_filters|default([], true) %}
+            {% set filter_key = filter_item.key|default('', true) %}
+            {% set filter_label = filter_item.label|default(filter_key|title, true) %}
+            {% set filter_options = filter_item.options|default([], true) %}
+
+            {% if filter_key and filter_key not in ['category', 'min_price', 'max_price', 'rating', 'brand'] and filter_options %}
+                <section class="filter-group">
+                    <h3>{{ filter_label }}</h3>
+
+                    {% for option in filter_options %}
+                        {% if option is mapping %}
+                            {% set option_value = option.value|default(option.name|default('', true), true) %}
+                            {% set option_label = option.label|default(option.name|default(option_value, true), true) %}
+                        {% else %}
+                            {% set option_value = option %}
+                            {% set option_label = option %}
+                        {% endif %}
+
+                        {% if option_value %}
+                            <label class="filter-option">
+                                <input
+                                    type="checkbox"
+                                    name="{{ filter_key }}"
+                                    value="{{ option_value }}"
+                                    {% if option_value|string in request.args.getlist(filter_key) %}checked{% endif %}
+                                >
+                                <span>{{ option_label }}</span>
+                            </label>
+                        {% endif %}
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endfor %}
+
+        <button type="submit" class="filter-apply-btn">
+            Apply filters
+        </button>
+    </form>
+</aside>
+```

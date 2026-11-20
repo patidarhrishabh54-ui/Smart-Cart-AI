@@ -1,0 +1,378 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8fc">
+
+    <title>{% block title %}SmartCart AI | Smarter Shopping{% endblock %}</title>
+
+    <meta name="description"
+          content="SmartCart AI — intelligent product search, comparison and price insights.">
+
+    <meta name="color-scheme" content="light">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="announcement-bar">
+        <div class="container announcement-inner">
+            <span>✦ Smarter shopping starts here</span>
+            <span class="announcement-dot"></span>
+            <span>{{ product_count|default(10000) }}+ products available</span>
+        </div>
+    </div>
+
+    <!-- SITE HEADER -->
+    <header class="site-header">
+
+        <div class="container header-main">
+
+            <!-- BRAND -->
+            <a href="{{ url_for('index') }}"
+               class="brand"
+               aria-label="SmartCart AI home">
+
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 14h6l4 16h18l4-12H17" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="21" cy="37" r="3" fill="#fff"/>
+                        <circle cx="35" cy="37" r="3" fill="#fff"/>
+                        <path d="M32 5l2 4.6L38.6 11.6 34 13.6 32 18.2 30 13.6 25.4 11.6 30 9.6z" fill="#fde68a"/>
+                    </svg>
+                </span>
+
+                <span class="brand-text">
+                    <strong>SmartCart</strong>
+                    <span class="brand-ai">AI</span>
+                    <small>SMARTER SHOPPING</small>
+                </span>
+            </a>
+
+            <!-- HEADER SEARCH -->
+            <form class="header-search"
+                  action="{{ url_for('search') }}"
+                  method="GET"
+                  role="search">
+
+                <span class="search-icon" aria-hidden="true">⌕</span>
+
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ request.args.get('q', '') }}"
+                    placeholder="Search products, brands, models..."
+                    autocomplete="off"
+                    aria-label="Search products">
+
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- HEADER ACTIONS -->
+            <div class="header-actions">
+
+                <a href="{{ url_for('compare') }}"
+                   class="header-action">
+
+                    <span class="action-icon" aria-hidden="true">⇄</span>
+
+                    <span>
+                        <small>Compare</small>
+                        <strong>Products</strong>
+                    </span>
+                </a>
+
+                <a href="{{ url_for('deals') }}"
+                   class="header-action">
+
+                    <span class="action-icon" aria-hidden="true">%</span>
+
+                    <span>
+                        <small>Today's</small>
+                        <strong>Deals</strong>
+                    </span>
+                </a>
+
+                <a href="{{ url_for('auth') }}"
+                   class="account-button">
+
+                    <span aria-hidden="true">♙</span>
+
+                    {% if current_user %}
+                        Account
+                    {% else %}
+                        Sign in
+                    {% endif %}
+                </a>
+
+            </div>
+        </div>
+
+        <!-- MAIN NAVIGATION -->
+        <nav class="navigation-bar" aria-label="Main navigation">
+            <div class="container navigation-inner">
+
+                <a href="{{ url_for('index') }}"
+                   class="nav-link nav-home">
+                    Home
+                </a>
+
+                <!-- CATEGORY MENU -->
+                <div class="nav-category-wrapper">
+
+                    <button
+                        class="nav-category-button"
+                        type="button"
+                        data-category-menu
+                        aria-expanded="false">
+
+                        <span aria-hidden="true">☰</span>
+                        Categories
+                        <span aria-hidden="true">⌄</span>
+                    </button>
+
+                    <div class="category-mega-menu">
+                        <div class="mega-menu-grid">
+
+                            {% for category in categories|default([], true) %}
+
+                                {% set category_name = category.name
+                                    if category is mapping
+                                    else category %}
+
+                                <a
+                                    href="{{ url_for('search', category=category_name) }}"
+                                    class="mega-category">
+
+                                    <span class="mega-category-icon">
+                                        {{ (category_name|string)[:1]|upper }}
+                                    </span>
+
+                                    <span class="mega-category-copy">
+                                        <strong>{{ category_name }}</strong>
+                                        <small>Explore products</small>
+                                    </span>
+                                </a>
+
+                            {% endfor %}
+
+                            {% if not categories %}
+                                <a href="{{ url_for('search') }}"
+                                   class="mega-category">
+
+                                    <span class="mega-category-icon">✦</span>
+
+                                    <span class="mega-category-copy">
+                                        <strong>All products</strong>
+                                        <small>Explore the collection</small>
+                                    </span>
+                                </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('search') }}" class="nav-link">
+                    All Products
+                </a>
+
+                <a href="{{ url_for('search', sort='rating') }}"
+                   class="nav-link">
+                    Top Rated
+                </a>
+
+                <a href="{{ url_for('search', sort='price_low') }}"
+                   class="nav-link">
+                    Best Prices
+                </a>
+
+                <a href="{{ url_for('deals') }}"
+                   class="nav-link nav-deal">
+                    Deals
+                </a>
+
+                <a href="{{ url_for('about') }}" class="nav-link">
+                    About
+                </a>
+
+                <div class="nav-trust-note">
+                    <span aria-hidden="true">✓</span>
+                    Compare smarter. Shop better.
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- PAGE CONTENT AND FLASH MESSAGES -->
+    <main id="main-content">
+
+        <div class="container flash-container">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category|default('info') }}">
+
+                            <span aria-hidden="true">
+                                {% if category == 'success' %}
+                                    ✓
+                                {% elif category == 'warning' %}
+                                    !
+                                {% elif category == 'error' or category == 'danger' %}
+                                    ×
+                                {% else %}
+                                    i
+                                {% endif %}
+                            </span>
+
+                            <p>{{ message }}</p>
+
+                            <button
+                                type="button"
+                                class="flash-close"
+                                data-close-flash
+                                aria-label="Dismiss notification">
+                                ×
+                            </button>
+
+                        </div>
+                    {% endfor %}
+
+                {% endif %}
+            {% endwith %}
+
+        </div>
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+
+        <div class="container footer-grid">
+
+            <div class="footer-brand">
+
+                <a href="{{ url_for('index') }}"
+                   class="brand footer-logo">
+
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 14h6l4 16h18l4-12H17" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="21" cy="37" r="3" fill="#fff"/>
+                        <circle cx="35" cy="37" r="3" fill="#fff"/>
+                        <path d="M32 5l2 4.6L38.6 11.6 34 13.6 32 18.2 30 13.6 25.4 11.6 30 9.6z" fill="#fde68a"/>
+                    </svg>
+                    </span>
+
+                    <span class="brand-text">
+                        <strong>SmartCart</strong>
+                        <span class="brand-ai">AI</span>
+                        <small>SMARTER SHOPPING</small>
+                    </span>
+                </a>
+
+                <p>
+                    Smarter product discovery, comparison and
+                    price intelligence in one place.
+                </p>
+
+                <div class="footer-trust">
+                    <span aria-hidden="true">✓</span>
+                    Compare products with confidence
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Shop</h4>
+                <a href="{{ url_for('search') }}">All Products</a>
+                <a href="{{ url_for('deals') }}">Deals</a>
+                <a href="{{ url_for('search', sort='rating') }}">Top Rated</a>
+                <a href="{{ url_for('compare') }}">Compare Products</a>
+            </div>
+
+            <div class="footer-column">
+                <h4>SmartCart AI</h4>
+                <a href="{{ url_for('about') }}">About Us</a>
+                <a href="{{ url_for('search') }}">Product Search</a>
+                <a href="{{ url_for('compare') }}">Price Comparison</a>
+                <a href="{{ url_for('deals') }}">Price Deals</a>
+            </div>
+
+            <div class="footer-column">
+                <h4>Account</h4>
+                <a href="{{ url_for('auth') }}">Sign In</a>
+                <a href="{{ url_for('auth') }}">Create Account</a>
+                <a href="{{ url_for('about') }}">Help</a>
+            </div>
+
+        </div>
+
+        <div class="container footer-bottom">
+            <span>
+                &copy; {{ now.year if now is defined and now else 2026 }}
+                SmartCart AI
+            </span>
+
+            <span>Intelligent shopping experience</span>
+        </div>
+    </footer>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+
+        <a href="{{ url_for('index') }}">
+            <span aria-hidden="true">⌂</span>
+            Home
+        </a>
+
+        <a href="{{ url_for('search') }}">
+            <span aria-hidden="true">⌕</span>
+            Search
+        </a>
+
+        <a href="{{ url_for('compare') }}">
+            <span aria-hidden="true">⇄</span>
+            Compare
+        </a>
+
+        <a href="{{ url_for('deals') }}">
+            <span aria-hidden="true">%</span>
+            Deals
+        </a>
+
+        <a href="{{ url_for('auth') }}">
+            <span aria-hidden="true">♙</span>
+            Account
+        </a>
+
+    </nav>
+
+    <!-- JAVASCRIPT FILES -->
+    <!-- Load feature files before main.js -->
+    <script src="{{ url_for('static', filename='js/filters.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/compare.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/product.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>
